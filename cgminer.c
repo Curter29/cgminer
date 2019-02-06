@@ -8257,7 +8257,7 @@ static void gen_stratum_work(struct pool *pool, struct work *work)
     cg_memcpy(pool->coinbase + pool->nonce2_offset, &nonce2le, (unsigned int)pool->n2size);
 
     pool->nonce2     = pool->nonce2 + 10;
-    work->nonce2     = pool->nonce2
+    work->nonce2     = pool->nonce2;
 
     // work->nonce2     = pool->nonce2++;
     work->nonce2_len = pool->n2size;
