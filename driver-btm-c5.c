@@ -71,7 +71,7 @@ unsigned char reset_iic_pic(unsigned char chain);
 extern  bool clement_doTestBoard(bool showlog);
 bool clement_doTestBoardOnce(bool showlog);
 
-#define hex_print(p) applog(LOG_INFO, "%s", p)
+#define hex_print(p) applog(LOG_DEBUG, "%s", p)
 
 static char nibble[] =
 {
@@ -748,7 +748,7 @@ unsigned int get_pic_iic()
     int ret = -1;
     ret = *(axi_fpga_addr + IIC_COMMAND);
 
-    applog(LOG_INFO,"%s: IIC_COMMAND is 0x%x\n", __FUNCTION__, ret);
+    applog(LOG_DEBUG,"%s: IIC_COMMAND is 0x%x\n", __FUNCTION__, ret);
     return ret;
 }
 
@@ -758,7 +758,7 @@ unsigned char set_pic_iic(unsigned int data)
     unsigned char ret_data = 0;
 
     *((unsigned int *)(axi_fpga_addr + IIC_COMMAND)) = data & 0x7fffffff;
-    applog(LOG_INFO,"%s: set IIC_COMMAND is 0x%x\n", __FUNCTION__, data & 0x7fffffff);
+    applog(LOG_DEBUG,"%s: set IIC_COMMAND is 0x%x\n", __FUNCTION__, data & 0x7fffffff);
 
     while(1)
     {
@@ -770,7 +770,7 @@ unsigned char set_pic_iic(unsigned int data)
         }
         else
         {
-            applog(LOG_INFO,"%s: waiting write pic iic\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: waiting write pic iic\n", __FUNCTION__);
             cgsleep_us(1000);
         }
     }
@@ -1883,7 +1883,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         int ret = -1;
         ret = *(axi_fpga_addr + IIC_COMMAND);
 
-        //applog(LOG_INFO,"%s: IIC_COMMAND is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: IIC_COMMAND is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -1896,7 +1896,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         char logstr[256];
 #endif
         *((unsigned int *)(axi_fpga_addr + IIC_COMMAND)) = data & 0x7fffffff;
-        //applog(LOG_INFO,"%s: set IIC_COMMAND is 0x%x\n", __FUNCTION__, data & 0x7fffffff);
+        //applog(LOG_DEBUG,"%s: set IIC_COMMAND is 0x%x\n", __FUNCTION__, data & 0x7fffffff);
 
         while(1)
         {
@@ -1920,7 +1920,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
 #endif
                     break;
                 }
-                //applog(LOG_INFO,"%s: waiting write pic iic\n", __FUNCTION__);
+                //applog(LOG_DEBUG,"%s: waiting write pic iic\n", __FUNCTION__);
             }
 #endif
             usleep(1000);
@@ -2287,7 +2287,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
     {
         get_nonce2_and_job_id_store_address();
         *((unsigned int *)(axi_fpga_addr + NONCE2_AND_JOBID_STORE_ADDRESS)) = value;
-        applog(LOG_INFO,"%s: set NONCE2_AND_JOBID_STORE_ADDRESS is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set NONCE2_AND_JOBID_STORE_ADDRESS is 0x%x\n", __FUNCTION__, value);
         get_nonce2_and_job_id_store_address();
     }
 
@@ -2295,14 +2295,14 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + JOB_START_ADDRESS));
-        applog(LOG_INFO,"%s: JOB_START_ADDRESS is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: JOB_START_ADDRESS is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_job_start_address(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + JOB_START_ADDRESS)) = value;
-        applog(LOG_INFO,"%s: set JOB_START_ADDRESS is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set JOB_START_ADDRESS is 0x%x\n", __FUNCTION__, value);
         get_job_start_address();
     }
 
@@ -2322,14 +2322,14 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
     {
         int ret = -1;
         ret = *((axi_fpga_addr + QN_WRITE_DATA_COMMAND));
-        applog(LOG_INFO,"%s: QN_WRITE_DATA_COMMAND is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: QN_WRITE_DATA_COMMAND is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_QN_write_data_command(unsigned int value)
     {
         *(axi_fpga_addr + QN_WRITE_DATA_COMMAND) = value;
-        applog(LOG_INFO,"%s: set QN_WRITE_DATA_COMMAND is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set QN_WRITE_DATA_COMMAND is 0x%x\n", __FUNCTION__, value);
         get_QN_write_data_command();
     }
 
@@ -2376,7 +2376,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         fd_mem = open("/dev/mem", O_RDWR);
         if(fd_mem < 0)
         {
-            applog(LOG_INFO,"/dev/mem open failed. fd = %d\n", fd_mem);
+            applog(LOG_DEBUG,"/dev/mem open failed. fd = %d\n", fd_mem);
             perror("open");
             return -1;
         }
@@ -2384,34 +2384,34 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         axi_fpga_addr = mmap(NULL, TOTAL_LEN, PROT_READ|PROT_WRITE, MAP_SHARED, fd_mem, AXI_FPGA_BASE_ADDRESS_XILINX);
         if(!axi_fpga_addr)
         {
-            applog(LOG_INFO,"mmap axi_fpga_addr failed. axi_fpga_addr = 0x%x\n", axi_fpga_addr);
+            applog(LOG_DEBUG,"mmap axi_fpga_addr failed. axi_fpga_addr = 0x%x\n", axi_fpga_addr);
             return -1;
         }
-        applog(LOG_INFO,"mmap axi_fpga_addr = 0x%x\n", axi_fpga_addr);
+        applog(LOG_DEBUG,"mmap axi_fpga_addr = 0x%x\n", axi_fpga_addr);
 
         //check the value in address 0xff200000
         data = *axi_fpga_addr;
         if((data & 0x0000FFFF) != HARDWARE_VERSION_VALUE)
         {
-            applog(LOG_INFO,"data = 0x%x, and it's not equal to HARDWARE_VERSION_VALUE : 0x%x\n", data, HARDWARE_VERSION_VALUE);
+            applog(LOG_DEBUG,"data = 0x%x, and it's not equal to HARDWARE_VERSION_VALUE : 0x%x\n", data, HARDWARE_VERSION_VALUE);
             //return -1;
         }
-        applog(LOG_INFO,"axi_fpga_addr data = 0x%x\n", data);
+        applog(LOG_DEBUG,"axi_fpga_addr data = 0x%x\n", data);
 
         fpga_mem_addr = mmap(NULL, FPGA_MEM_TOTAL_LEN, PROT_READ|PROT_WRITE, MAP_SHARED, fd_mem, PHY_MEM_NONCE2_JOBID_ADDRESS);
         if(!fpga_mem_addr)
         {
-            applog(LOG_INFO,"mmap fpga_mem_addr failed. fpga_mem_addr = 0x%x\n", fpga_mem_addr);
+            applog(LOG_DEBUG,"mmap fpga_mem_addr failed. fpga_mem_addr = 0x%x\n", fpga_mem_addr);
             return -1;
         }
-        applog(LOG_INFO,"mmap fpga_mem_addr = 0x%x\n", fpga_mem_addr);
+        applog(LOG_DEBUG,"mmap fpga_mem_addr = 0x%x\n", fpga_mem_addr);
 
         nonce2_jobid_address = fpga_mem_addr;
         job_start_address_1  = fpga_mem_addr + NONCE2_AND_JOBID_STORE_SPACE/sizeof(int);
         job_start_address_2  = fpga_mem_addr + (NONCE2_AND_JOBID_STORE_SPACE + JOB_STORE_SPACE)/sizeof(int);
 
-        applog(LOG_INFO,"job_start_address_1 = 0x%x\n", job_start_address_1);
-        applog(LOG_INFO,"job_start_address_2 = 0x%x\n", job_start_address_2);
+        applog(LOG_DEBUG,"job_start_address_1 = 0x%x\n", job_start_address_1);
+        applog(LOG_DEBUG,"job_start_address_2 = 0x%x\n", job_start_address_2);
 
         set_nonce2_and_job_id_store_address(PHY_MEM_NONCE2_JOBID_ADDRESS);
         set_job_start_address(PHY_MEM_JOB_START_ADDRESS_1);
@@ -2419,13 +2419,13 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         dev = calloc(sizeof(struct all_parameters), sizeof(char));
         if(!dev)
         {
-            applog(LOG_INFO,"kmalloc for dev failed.\n");
+            applog(LOG_DEBUG,"kmalloc for dev failed.\n");
             return -1;
         }
         else
         {
             dev->current_job_start_address = job_start_address_1;
-            applog(LOG_INFO,"kmalloc for dev success.\n");
+            applog(LOG_DEBUG,"kmalloc for dev success.\n");
         }
         return ret;
     }
@@ -2462,13 +2462,13 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         ret = munmap((void *)axi_fpga_addr, TOTAL_LEN);
         if(ret<0)
         {
-            applog(LOG_INFO,"munmap failed!\n");
+            applog(LOG_DEBUG,"munmap failed!\n");
         }
 
         ret = munmap((void *)fpga_mem_addr, FPGA_MEM_TOTAL_LEN);
         if(ret<0)
         {
-            applog(LOG_INFO,"munmap failed!\n");
+            applog(LOG_DEBUG,"munmap failed!\n");
         }
 
         //free_pages((unsigned long)nonce2_jobid_address, NONCE2_AND_JOBID_STORE_SPACE_ORDER);
@@ -2482,14 +2482,14 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + FAN_CONTROL));
-        applog(LOG_INFO,"%s: FAN_CONTROL is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: FAN_CONTROL is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_fan_control(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + FAN_CONTROL)) = value;
-        applog(LOG_INFO,"%s: set FAN_CONTROL is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set FAN_CONTROL is 0x%x\n", __FUNCTION__, value);
         get_fan_control();
     }
 
@@ -2498,7 +2498,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         int ret = -1;
         ret = *(axi_fpga_addr + HASH_ON_PLUG);
 
-        applog(LOG_INFO,"%s: HASH_ON_PLUG is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: HASH_ON_PLUG is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2514,7 +2514,7 @@ void set_pic_iic_flash_addr_pointer(unsigned char chain, unsigned char addr_H, u
         int ret = -1;
         ret = *((int *)(axi_fpga_addr + HARDWARE_VERSION));
 
-        applog(LOG_INFO,"%s: HARDWARE_VERSION is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: HARDWARE_VERSION is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2531,7 +2531,7 @@ void set_Hardware_version(unsigned int value)
         *fan_id = (unsigned char)(0x00000007 & (ret >> 8));
         if(*fan_speed > 0)
         {
-            applog(LOG_INFO,"%s: fan_id is 0x%x, fan_speed is 0x%x\n", __FUNCTION__, *fan_id, *fan_speed);
+            applog(LOG_DEBUG,"%s: fan_id is 0x%x, fan_speed is 0x%x\n", __FUNCTION__, *fan_id, *fan_speed);
         }
         return ret;
     }
@@ -2540,7 +2540,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((int *)(axi_fpga_addr + TEMPERATURE_0_3));
-        //applog(LOG_INFO,"%s: TEMPERATURE_0_3 is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: TEMPERATURE_0_3 is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2548,7 +2548,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((int *)(axi_fpga_addr + TEMPERATURE_4_7));
-        //applog(LOG_INFO,"%s: TEMPERATURE_4_7 is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: TEMPERATURE_4_7 is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2556,7 +2556,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((int *)(axi_fpga_addr + TEMPERATURE_8_11));
-        //applog(LOG_INFO,"%s: TEMPERATURE_8_11 is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: TEMPERATURE_8_11 is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2564,7 +2564,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((int *)(axi_fpga_addr + TEMPERATURE_12_15));
-        //applog(LOG_INFO,"%s: TEMPERATURE_12_15 is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: TEMPERATURE_12_15 is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2572,14 +2572,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + TIME_OUT_CONTROL));
-        applog(LOG_INFO,"%s: TIME_OUT_CONTROL is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: TIME_OUT_CONTROL is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_time_out_control(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + TIME_OUT_CONTROL)) = value;
-        applog(LOG_INFO,"%s: set FAN_CONTROL is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set FAN_CONTROL is 0x%x\n", __FUNCTION__, value);
         get_time_out_control();
     }
 
@@ -2592,7 +2592,7 @@ void set_Hardware_version(unsigned int value)
         *(buf + 1) = ret;
         ret = *((unsigned int *)(axi_fpga_addr + BC_COMMAND_BUFFER + 2));
         *(buf + 2) = ret;
-        applog(LOG_INFO,"%s: BC_COMMAND_BUFFER buf[0]: 0x%x, buf[1]: 0x%x, buf[2]: 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1), *(buf + 2));
+        applog(LOG_DEBUG,"%s: BC_COMMAND_BUFFER buf[0]: 0x%x, buf[1]: 0x%x, buf[2]: 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1), *(buf + 2));
         return ret;
     }
 
@@ -2602,7 +2602,7 @@ void set_Hardware_version(unsigned int value)
         *((unsigned int *)(axi_fpga_addr + BC_COMMAND_BUFFER)) = *(value + 0);      //this is for FIL
         *((unsigned int *)(axi_fpga_addr + BC_COMMAND_BUFFER + 1)) = *(value + 1);
         *((unsigned int *)(axi_fpga_addr + BC_COMMAND_BUFFER + 2)) = *(value + 2);
-        applog(LOG_INFO,"%s: set BC_COMMAND_BUFFER value[0]: 0x%x, value[1]: 0x%x, value[2]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1), *(value + 2));
+        applog(LOG_DEBUG,"%s: set BC_COMMAND_BUFFER value[0]: 0x%x, value[1]: 0x%x, value[2]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1), *(value + 2));
         get_BC_command_buffer(buf);
     }
 
@@ -2610,7 +2610,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + NONCE_NUMBER_IN_FIFO));
-        //applog(LOG_INFO,"%s: NONCE_NUMBER_IN_FIFO is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: NONCE_NUMBER_IN_FIFO is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2621,7 +2621,7 @@ void set_Hardware_version(unsigned int value)
         *(buf + 0) = ret;
         ret = *((unsigned int *)(axi_fpga_addr + RETURN_NONCE + 1));
         *(buf + 1) = ret;   //there is nonce3
-        //applog(LOG_INFO,"%s: RETURN_NONCE buf[0] is 0x%x, buf[1] is 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1));
+        //applog(LOG_DEBUG,"%s: RETURN_NONCE buf[0] is 0x%x, buf[1] is 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1));
         return ret;
     }
 
@@ -2629,7 +2629,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + BC_WRITE_COMMAND));
-        applog(LOG_INFO,"%s: BC_WRITE_COMMAND is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: BC_WRITE_COMMAND is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2638,7 +2638,7 @@ void set_Hardware_version(unsigned int value)
         char logstr[256];
         int wait_count=0;
         *((unsigned int *)(axi_fpga_addr + BC_WRITE_COMMAND)) = value;
-        //applog(LOG_INFO,"%s: set BC_WRITE_COMMAND is 0x%x\n", __FUNCTION__, value);
+        //applog(LOG_DEBUG,"%s: set BC_WRITE_COMMAND is 0x%x\n", __FUNCTION__, value);
 
         if(value & BC_COMMAND_BUFFER_READY)
         {
@@ -2653,7 +2653,7 @@ void set_Hardware_version(unsigned int value)
                     writeInitLogFile(logstr);
                     break;
                 }
-                //applog(LOG_INFO,"%s ---\n", __FUNCTION__);
+                //applog(LOG_DEBUG,"%s ---\n", __FUNCTION__);
             }
         }
         else
@@ -2666,14 +2666,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + TICKET_MASK_FPGA));
-        applog(LOG_INFO,"%s: TICKET_MASK_FPGA is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: TICKET_MASK_FPGA is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_ticket_mask(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + TICKET_MASK_FPGA)) = value;
-        applog(LOG_INFO,"%s: set TICKET_MASK_FPGA is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set TICKET_MASK_FPGA is 0x%x\n", __FUNCTION__, value);
         get_ticket_mask();
     }
 
@@ -2681,14 +2681,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + JOB_ID));
-        applog(LOG_INFO,"%s: JOB_ID is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: JOB_ID is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_job_id(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + JOB_ID)) = value;
-        applog(LOG_INFO,"%s: set JOB_ID is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set JOB_ID is 0x%x\n", __FUNCTION__, value);
         get_job_id();
     }
 
@@ -2696,14 +2696,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + JOB_LENGTH));
-        applog(LOG_INFO,"%s: JOB_LENGTH is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: JOB_LENGTH is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_job_length(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + JOB_LENGTH)) = value;
-        applog(LOG_INFO,"%s: set JOB_LENGTH is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set JOB_LENGTH is 0x%x\n", __FUNCTION__, value);
         get_job_id();
     }
 
@@ -2712,14 +2712,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + BLOCK_HEADER_VERSION));
-        applog(LOG_INFO,"%s: BLOCK_HEADER_VERSION is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: BLOCK_HEADER_VERSION is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_block_header_version(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + BLOCK_HEADER_VERSION)) = value;
-        applog(LOG_INFO,"%s: set BLOCK_HEADER_VERSION is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set BLOCK_HEADER_VERSION is 0x%x\n", __FUNCTION__, value);
         get_block_header_version();
     }
 
@@ -2727,14 +2727,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + TIME_STAMP));
-        applog(LOG_INFO,"%s: TIME_STAMP is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: TIME_STAMP is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_time_stamp(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + TIME_STAMP)) = value;
-        applog(LOG_INFO,"%s: set TIME_STAMP is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set TIME_STAMP is 0x%x\n", __FUNCTION__, value);
         get_time_stamp();
     }
 
@@ -2742,14 +2742,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + TARGET_BITS));
-        applog(LOG_INFO,"%s: TARGET_BITS is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: TARGET_BITS is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_target_bits(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + TARGET_BITS)) = value;
-        applog(LOG_INFO,"%s: set TARGET_BITS is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set TARGET_BITS is 0x%x\n", __FUNCTION__, value);
         get_target_bits();
     }
 
@@ -2764,7 +2764,7 @@ void set_Hardware_version(unsigned int value)
         *(buf + 5) = *((unsigned int *)(axi_fpga_addr + PRE_HEADER_HASH + 5));
         *(buf + 6) = *((unsigned int *)(axi_fpga_addr + PRE_HEADER_HASH + 6));
         *(buf + 7) = *((unsigned int *)(axi_fpga_addr + PRE_HEADER_HASH + 7));
-        applog(LOG_INFO,"%s: PRE_HEADER_HASH buf[0]: 0x%x, buf[1]: 0x%x, buf[2]: 0x%x, buf[3]: 0x%x, buf[4]: 0x%x, buf[5]: 0x%x, buf[6]: 0x%x, buf[7]: 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1), *(buf + 2), *(buf + 3), *(buf + 4), *(buf + 5), *(buf + 6), *(buf + 7));
+        applog(LOG_DEBUG,"%s: PRE_HEADER_HASH buf[0]: 0x%x, buf[1]: 0x%x, buf[2]: 0x%x, buf[3]: 0x%x, buf[4]: 0x%x, buf[5]: 0x%x, buf[6]: 0x%x, buf[7]: 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1), *(buf + 2), *(buf + 3), *(buf + 4), *(buf + 5), *(buf + 6), *(buf + 7));
         ret = *(buf + 7);
         return ret;
     }
@@ -2780,7 +2780,7 @@ void set_Hardware_version(unsigned int value)
         *(axi_fpga_addr + PRE_HEADER_HASH + 5) = *(value + 5);
         *(axi_fpga_addr + PRE_HEADER_HASH + 6) = *(value + 6);
         *(axi_fpga_addr + PRE_HEADER_HASH + 7) = *(value + 7);
-        applog(LOG_INFO,"%s: set PRE_HEADER_HASH value[0]: 0x%x, value[1]: 0x%x, value[2]: 0x%x, value[3]: 0x%x, value[4]: 0x%x, value[5]: 0x%x, value[6]: 0x%x, value[7]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1), *(value + 2), *(value + 3), *(value + 4), *(value + 5), *(value + 6), *(value + 7));
+        applog(LOG_DEBUG,"%s: set PRE_HEADER_HASH value[0]: 0x%x, value[1]: 0x%x, value[2]: 0x%x, value[3]: 0x%x, value[4]: 0x%x, value[5]: 0x%x, value[6]: 0x%x, value[7]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1), *(value + 2), *(value + 3), *(value + 4), *(value + 5), *(value + 6), *(value + 7));
         //get_pre_header_hash(buf);
     }
 
@@ -2788,14 +2788,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + COINBASE_AND_NONCE2_LENGTH));
-        applog(LOG_INFO,"%s: COINBASE_AND_NONCE2_LENGTH is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: COINBASE_AND_NONCE2_LENGTH is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_coinbase_length_and_nonce2_length(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + COINBASE_AND_NONCE2_LENGTH)) = value;
-        applog(LOG_INFO,"%s: set COINBASE_AND_NONCE2_LENGTH is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set COINBASE_AND_NONCE2_LENGTH is 0x%x\n", __FUNCTION__, value);
         get_coinbase_length_and_nonce2_length();
     }
 
@@ -2804,7 +2804,7 @@ void set_Hardware_version(unsigned int value)
         int ret = -1;
         *(buf + 0) = *((unsigned int *)(axi_fpga_addr + WORK_NONCE_2));
         *(buf + 1) = *((unsigned int *)(axi_fpga_addr + WORK_NONCE_2 + 1));
-        applog(LOG_INFO,"%s: WORK_NONCE_2 buf[0]: 0x%x, buf[1]: 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1));
+        applog(LOG_DEBUG,"%s: WORK_NONCE_2 buf[0]: 0x%x, buf[1]: 0x%x\n", __FUNCTION__, *(buf + 0), *(buf + 1));
         return ret;
     }
 
@@ -2813,7 +2813,7 @@ void set_Hardware_version(unsigned int value)
         unsigned int buf[2] = {0};
         *((unsigned int *)(axi_fpga_addr + WORK_NONCE_2)) = *(value + 0);
         *((unsigned int *)(axi_fpga_addr + WORK_NONCE_2 + 1)) = *(value + 1);
-        applog(LOG_INFO,"%s: set WORK_NONCE_2 value[0]: 0x%x, value[1]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1));
+        applog(LOG_DEBUG,"%s: set WORK_NONCE_2 value[0]: 0x%x, value[1]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1));
         get_work_nonce2(buf);
     }
 
@@ -2822,14 +2822,14 @@ void set_Hardware_version(unsigned int value)
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + MERKLE_BIN_NUMBER));
         ret = ret & 0x0000ffff;
-        applog(LOG_INFO,"%s: MERKLE_BIN_NUMBER is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: MERKLE_BIN_NUMBER is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_merkle_bin_number(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + MERKLE_BIN_NUMBER)) = value & 0x0000ffff;
-        applog(LOG_INFO,"%s: set MERKLE_BIN_NUMBER is 0x%x\n", __FUNCTION__, value & 0x0000ffff);
+        applog(LOG_DEBUG,"%s: set MERKLE_BIN_NUMBER is 0x%x\n", __FUNCTION__, value & 0x0000ffff);
         get_merkle_bin_number();
     }
 
@@ -2837,14 +2837,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + NONCE_FIFO_INTERRUPT));
-        applog(LOG_INFO,"%s: NONCE_FIFO_INTERRUPT is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: NONCE_FIFO_INTERRUPT is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_nonce_fifo_interrupt(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + NONCE_FIFO_INTERRUPT)) = value;
-        applog(LOG_INFO,"%s: set NONCE_FIFO_INTERRUPT is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set NONCE_FIFO_INTERRUPT is 0x%x\n", __FUNCTION__, value);
         get_nonce_fifo_interrupt();
     }
 
@@ -2852,7 +2852,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + DHASH_ACC_CONTROL));
-        applog(LOG_INFO,"%s: DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2860,7 +2860,7 @@ void set_Hardware_version(unsigned int value)
     {
         int a = 10;
         *((unsigned int *)(axi_fpga_addr + DHASH_ACC_CONTROL)) = value;
-        applog(LOG_INFO,"%s: set DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, value);
         while (a>0)
         {
             if ((value | NEW_BLOCK) == (get_dhash_acc_control() |NEW_BLOCK))
@@ -2870,7 +2870,7 @@ void set_Hardware_version(unsigned int value)
             cgsleep_ms(2);
         }
         if (a == 0)
-            applog(LOG_INFO,"%s set DHASH_ACC_CONTROL failed!",__FUNCTION__);
+            applog(LOG_DEBUG,"%s set DHASH_ACC_CONTROL failed!",__FUNCTION__);
     }
 
     void set_TW_write_command(unsigned int *value)
@@ -2879,9 +2879,9 @@ void set_Hardware_version(unsigned int value)
         for(i=0; i<TW_WRITE_COMMAND_LEN/sizeof(unsigned int); i++)
         {
             *((unsigned int *)(axi_fpga_addr + TW_WRITE_COMMAND + i)) = *(value + i);       //this is for FIL
-            //applog(LOG_INFO,"%s: set TW_WRITE_COMMAND value[%d]: 0x%x\n", __FUNCTION__, i, *(value + i));
+            //applog(LOG_DEBUG,"%s: set TW_WRITE_COMMAND value[%d]: 0x%x\n", __FUNCTION__, i, *(value + i));
         }
-        //applog(LOG_INFO,"%s: set TW_WRITE_COMMAND value[0]: 0x%x, value[1]: 0x%x, value[2]: 0x%x, value[3]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1), *(value + 2), *(value + 3));
+        //applog(LOG_DEBUG,"%s: set TW_WRITE_COMMAND value[0]: 0x%x, value[1]: 0x%x, value[2]: 0x%x, value[3]: 0x%x\n", __FUNCTION__, *(value + 0), *(value + 1), *(value + 2), *(value + 3));
     }
 
     void set_TW_write_command_vil(unsigned int *value)
@@ -2902,7 +2902,7 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + BUFFER_SPACE));
-        //applog(LOG_INFO,"%s: work fifo ready is 0x%x\n", __FUNCTION__, ret);
+        //applog(LOG_DEBUG,"%s: work fifo ready is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
@@ -2910,14 +2910,14 @@ void set_Hardware_version(unsigned int value)
     {
         int ret = -1;
         ret = *((unsigned int *)(axi_fpga_addr + HASH_COUNTING_NUMBER_FPGA));
-        applog(LOG_INFO,"%s: DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, ret);
+        applog(LOG_DEBUG,"%s: DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, ret);
         return ret;
     }
 
     void set_hash_counting_number(unsigned int value)
     {
         *((unsigned int *)(axi_fpga_addr + HASH_COUNTING_NUMBER_FPGA)) = value;
-        applog(LOG_INFO,"%s: set DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, value);
+        applog(LOG_DEBUG,"%s: set DHASH_ACC_CONTROL is 0x%x\n", __FUNCTION__, value);
         get_hash_counting_number();
     }
 
@@ -2932,7 +2932,7 @@ void set_Hardware_version(unsigned int value)
 
         if(ret < 0)
         {
-            applog(LOG_INFO,"%s: get_hash_on_plug functions error\n");
+            applog(LOG_DEBUG,"%s: get_hash_on_plug functions error\n");
         }
         else
         {
@@ -3118,7 +3118,7 @@ void set_Hardware_version(unsigned int value)
 
         if(temp_highest >= MAX_FAN_TEMP)
         {
-            applog(LOG_INFO,"%s: Temperature is higher than %d 'C\n", __FUNCTION__, temp_highest);
+            applog(LOG_DEBUG,"%s: Temperature is higher than %d 'C\n", __FUNCTION__, temp_highest);
         }
 
         temp_change = temp_highest - last_temperature;
@@ -3127,7 +3127,7 @@ void set_Hardware_version(unsigned int value)
         {
             set_PWM(MAX_PWM_PERCENT);
             dev->fan_pwm = MAX_PWM_PERCENT;
-            applog(LOG_INFO,"%s: Set PWM percent  : MAX_PWM_PERCENT\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: Set PWM percent  : MAX_PWM_PERCENT\n", __FUNCTION__);
             return;
         }
 
@@ -3135,7 +3135,7 @@ void set_Hardware_version(unsigned int value)
         {
             set_PWM(MIN_PWM_PERCENT);
             dev->fan_pwm = MIN_PWM_PERCENT;
-            applog(LOG_INFO,"%s: Set PWM percent : MIN_PWM_PERCENT\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: Set PWM percent : MIN_PWM_PERCENT\n", __FUNCTION__);
             return;
         }
 
@@ -3159,7 +3159,7 @@ void set_Hardware_version(unsigned int value)
             }
 
             dev->fan_pwm = pwm_percent;
-            applog(LOG_INFO,"%s: Set PWM percent : %d\n", __FUNCTION__, pwm_percent);
+            applog(LOG_DEBUG,"%s: Set PWM percent : %d\n", __FUNCTION__, pwm_percent);
             set_PWM(pwm_percent);
             last_temperature = temp_highest;
         }
@@ -3222,7 +3222,7 @@ void set_Hardware_version(unsigned int value)
                 dev->fan_pwm = pwm_percent;
 
                 last_temperature = temp_highest;
-                applog(LOG_INFO,"%s: Set PWM percent : %d\n", __FUNCTION__, pwm_percent);
+                applog(LOG_DEBUG,"%s: Set PWM percent : %d\n", __FUNCTION__, pwm_percent);
                 set_PWM(pwm_percent);
             }
         }
@@ -3276,7 +3276,7 @@ void set_Hardware_version(unsigned int value)
                 dev->fan_pwm = pwm_percent;
 
                 last_temperature = temp_highest;
-                applog(LOG_INFO,"%s: Set PWM percent : %d\n", __FUNCTION__, pwm_percent);
+                applog(LOG_DEBUG,"%s: Set PWM percent : %d\n", __FUNCTION__, pwm_percent);
                 set_PWM(pwm_percent);
             }
             else
@@ -3365,7 +3365,7 @@ void set_Hardware_version(unsigned int value)
 
         reg_data_vil = freq_pll_1385[pllindex].vilpll;;
 
-        //applog(LOG_INFO,"%s: i = %d\n", __FUNCTION__, i);
+        //applog(LOG_DEBUG,"%s: i = %d\n", __FUNCTION__, i);
         if(!opt_multi_version)  // fil mode
         {
             memset(buf,0,sizeof(buf));
@@ -3977,7 +3977,7 @@ void set_Hardware_version(unsigned int value)
         int default_freq_index=get_pll_index(orig_frequency);
         char logstr[256];
 
-        applog(LOG_INFO,"\n--- %s\n", __FUNCTION__);
+        applog(LOG_DEBUG,"\n--- %s\n", __FUNCTION__);
 
         get_plldata(1385, orig_frequency, &reg_data_pll, &reg_data_pll2, &reg_data_vil);
 	frequency = atoi(freq_pll_1385[default_freq_index].freq);
@@ -4226,7 +4226,7 @@ void set_Hardware_version(unsigned int value)
 
                         for(j = 0; j < dev->chain_asic_num[i]; j ++)
                         {
-                            applog(LOG_INFO,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]);
+                            applog(LOG_DEBUG,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]);
 
                             if(chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]<MIN_FREQ)
                                 chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]=MIN_FREQ;// error index, set to index of 300M as min
@@ -4263,7 +4263,7 @@ void set_Hardware_version(unsigned int value)
 
                         for(j = 0; j < dev->chain_asic_num[i]; j ++)
                         {
-                            applog(LOG_INFO,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]);
+                            applog(LOG_DEBUG,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]);
 
                             if(chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]<MIN_FREQ)
                                 chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]=MIN_FREQ;// error index, set to index of 300M as min
@@ -4308,7 +4308,7 @@ void set_Hardware_version(unsigned int value)
                             step_down = 0;
                         last_freq[i][j*2+3] -=step_down;    // down steps based on the PIC's freq
 
-                        applog(LOG_INFO,"%s: freq index=%d\n", __FUNCTION__,last_freq[i][j*2+3]);
+                        applog(LOG_DEBUG,"%s: freq index=%d\n", __FUNCTION__,last_freq[i][j*2+3]);
 
                         if(last_freq[i][j*2+3]<MIN_FREQ)
                             last_freq[i][j*2+3]=MIN_FREQ;// error index, set to index of 300M as min
@@ -4459,7 +4459,7 @@ void set_Hardware_version(unsigned int value)
                     }
                     for(j = 0; j < dev->chain_asic_num[i]; j ++)
                     {
-                        applog(LOG_INFO,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]);
+                        applog(LOG_DEBUG,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]);
 
                         if(chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]<MIN_FREQ)
                             chain_pic_buf[new_T9_PLUS_chainIndex][7+new_T9_PLUS_chainOffset*31+4+j]=MIN_FREQ;// error index, set to index of 300M as min
@@ -4505,7 +4505,7 @@ void set_Hardware_version(unsigned int value)
                     }
                     for(j = 0; j < dev->chain_asic_num[i]; j ++)
                     {
-                        applog(LOG_INFO,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]);
+                        applog(LOG_DEBUG,"%s: freq index=%d\n", __FUNCTION__,chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]);
 
                         if(chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]<MIN_FREQ)
                             chain_pic_buf[((i/3)*3)][7+(i%3)*31+4+j]=MIN_FREQ;// error index, set to index of 300M as min
@@ -4562,7 +4562,7 @@ void set_Hardware_version(unsigned int value)
                         last_freq[i][j*2+3] -=step_down;    // down some steps based on the PIC's freq,  now NOT USED!!!
                     }
 
-                    applog(LOG_INFO,"%s: freq index=%d\n", __FUNCTION__,last_freq[i][j*2+3]);
+                    applog(LOG_DEBUG,"%s: freq index=%d\n", __FUNCTION__,last_freq[i][j*2+3]);
 
                     if(last_freq[i][j*2+3]<MIN_FREQ)
                         last_freq[i][j*2+3]=MIN_FREQ;// error index, set to index of 300M as min
@@ -4646,12 +4646,12 @@ void set_Hardware_version(unsigned int value)
         uint32_t reg_data_vil = 0;
         i = chain;
 
-        applog(LOG_INFO,"\n--- %s\n", __FUNCTION__);
+        applog(LOG_DEBUG,"\n--- %s\n", __FUNCTION__);
 
         get_plldata(1385, frequency, &reg_data_pll, &reg_data_pll2, &reg_data_vil);
-        applog(LOG_INFO,"%s: frequency = %d\n", __FUNCTION__, frequency);
+        applog(LOG_DEBUG,"%s: frequency = %d\n", __FUNCTION__, frequency);
 
-        //applog(LOG_INFO,"%s: i = %d\n", __FUNCTION__, i);
+        //applog(LOG_DEBUG,"%s: i = %d\n", __FUNCTION__, i);
         if(!opt_multi_version)  // fil mode
         {
             memset(buf,0,sizeof(buf));
@@ -4760,7 +4760,7 @@ void set_Hardware_version(unsigned int value)
             if (mode)   //all
                 buf[0] |= COMMAND_FOR_ALL;
             buf[3] = CRC5(buf, 4*8 - 5);
-            applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
+            applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             set_BC_command_buffer(cmd_buf);
@@ -4778,7 +4778,7 @@ void set_Hardware_version(unsigned int value)
             buf[2] = chip_addr;
             buf[3] = reg_addr;
             buf[4] = CRC5(buf, 4*8);
-            applog(LOG_INFO,"%s:VIL buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x, buf[4]=0x%x", __FUNCTION__, buf[0], buf[1], buf[2], buf[3], buf[4]);
+            applog(LOG_DEBUG,"%s:VIL buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x, buf[4]=0x%x", __FUNCTION__, buf[0], buf[1], buf[2], buf[3], buf[4]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             cmd_buf[1] = buf[4]<<24;
@@ -5320,7 +5320,7 @@ void set_Hardware_version(unsigned int value)
 
                             if(reg == PLL_PARAMETER)
                             {
-                                applog(LOG_INFO,"%s: the asic freq is 0x%x\n", __FUNCTION__, reg_value_buf.reg_buffer[reg_value_buf.p_rd].reg_value);
+                                applog(LOG_DEBUG,"%s: the asic freq is 0x%x\n", __FUNCTION__, reg_value_buf.reg_buffer[reg_value_buf.p_rd].reg_value);
                             }
 
                             if(reg == 0x08)
@@ -5333,7 +5333,7 @@ void set_Hardware_version(unsigned int value)
                                 {
                                     sprintf(rate_buf + 2*i,"%02x",reg_buf[i]);
                                 }
-                                applog(LOG_INFO,"%s: hashrate is %s\n", __FUNCTION__, rate_buf);
+                                applog(LOG_DEBUG,"%s: hashrate is %s\n", __FUNCTION__, rate_buf);
                                 temp_hash_rate = strtol(rate_buf,NULL,16);
                                 temp_hash_rate = (temp_hash_rate << 24);
                                 tmp_rate += temp_hash_rate;
@@ -5379,7 +5379,7 @@ void set_Hardware_version(unsigned int value)
                     rate[i] = tmp_rate;
                     suffix_string_c5(rate[i], (char * )displayed_rate[i], sizeof(displayed_rate[i]), 6,false);
                     rate_error[i] = 0;
-                    applog(LOG_INFO,"%s: chain %d hashrate is %s\n", __FUNCTION__, i, displayed_rate[i]);
+                    applog(LOG_DEBUG,"%s: chain %d hashrate is %s\n", __FUNCTION__, i, displayed_rate[i]);
                 }
                 if(read_num == 0 || status_error )
                 {
@@ -5419,7 +5419,7 @@ void set_Hardware_version(unsigned int value)
             //applog(LOG_NOTICE,"%s: p_wr = %d reg_value_num = %d\n", __FUNCTION__,reg_value_buf.p_wr,reg_value_buf.reg_value_num);
             pthread_mutex_unlock(&reg_mutex);
 
-            applog(LOG_INFO,"%s: reg_value_num %d", __FUNCTION__, reg_value_num);
+            applog(LOG_DEBUG,"%s: reg_value_num %d", __FUNCTION__, reg_value_num);
             if((reg_value_num >= MAX_NONCE_NUMBER_IN_FIFO || reg_value_buf.p_rd >= MAX_NONCE_NUMBER_IN_FIFO ||reg_value_num ==0 ) && not_reg_data_time <RETRY_NUM)
             {
                 not_reg_data_time ++;
@@ -5434,7 +5434,7 @@ void set_Hardware_version(unsigned int value)
             for(i = 0; i < reg_value_num; i++)
             {
                 reg_buf = reg_value_buf.reg_buffer[reg_value_buf.p_rd].reg_value;
-                applog(LOG_INFO,"%s: chip %x reg %x reg_buff %x", __FUNCTION__, chip_addr,reg,reg_buf);
+                applog(LOG_DEBUG,"%s: chip %x reg %x reg_buff %x", __FUNCTION__, chip_addr,reg,reg_buf);
                 reg_value_buf.p_rd++;
                 reg_value_buf.reg_value_num--;
                 if(reg_value_buf.p_rd < MAX_NONCE_NUMBER_IN_FIFO)
@@ -5539,7 +5539,7 @@ void set_Hardware_version(unsigned int value)
         remote = remote - 64;
 #endif
         t_re_re = (1.008 * (remote) - (1.11 - 1.008) * 273.15) / 1.11;
-        applog(LOG_INFO,"remote : %"PRId16" temp : %f",remote,t_re_re);
+        applog(LOG_DEBUG,"remote : %"PRId16" temp : %f",remote,t_re_re);
         return (int16_t)(t_re_re);
     }
 
@@ -5687,7 +5687,7 @@ void set_Hardware_version(unsigned int value)
             buf[2] = bauddiv & 0x1f;
             buf[0] |= COMMAND_FOR_ALL;
             buf[3] = CRC5(buf, 4*8 - 5);
-            applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
+            applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             set_BC_command_buffer(cmd_buf);
@@ -6312,7 +6312,7 @@ void set_Hardware_version(unsigned int value)
         //check who control fan
         dev->fan_eft = config_parameter.fan_eft;
         dev->fan_pwm= config_parameter.fan_pwm_percent;
-        applog(LOG_INFO,"%s: fan_eft : %d	fan_pwm : %d\n", __FUNCTION__,dev->fan_eft,dev->fan_pwm);
+        applog(LOG_DEBUG,"%s: fan_eft : %d	fan_pwm : %d\n", __FUNCTION__,dev->fan_eft,dev->fan_pwm);
         if(config_parameter.fan_eft)
         {
             if((config_parameter.fan_pwm_percent >= 0) && (config_parameter.fan_pwm_percent <= 100))
@@ -6342,7 +6342,7 @@ void set_Hardware_version(unsigned int value)
 #endif
                 // for set_freq_auto test,set timeout when frequency equals 700M
                 //  dev->timeout = 0x1000000/calculate_core_number(dev->corenum)*dev->addrInterval/700*90/100;
-                applog(LOG_INFO,"dev->timeout = %d\n", dev->timeout);
+                applog(LOG_DEBUG,"dev->timeout = %d\n", dev->timeout);
             }
             else
             {
@@ -7352,7 +7352,7 @@ void set_Hardware_version(unsigned int value)
             buf[1] = 0;
             buf[2] = 0;
             buf[3] = CRC5(buf, 4*8 - 5);
-            applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
+            applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             set_BC_command_buffer(cmd_buf);
@@ -7368,7 +7368,7 @@ void set_Hardware_version(unsigned int value)
             buf[2] = 0;
             buf[3] = 0;
             buf[4] = CRC5(buf, 4*8);
-            applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x, buf[4]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3], buf[4]);
+            applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x, buf[4]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3], buf[4]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             cmd_buf[1] = buf[4]<<24;
@@ -7399,7 +7399,7 @@ void set_Hardware_version(unsigned int value)
             if (mode)   //all
                 buf[0] |= COMMAND_FOR_ALL;
             buf[3] = CRC5(buf, 4*8 - 5);
-            applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
+            applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             set_BC_command_buffer(cmd_buf);
@@ -7415,7 +7415,7 @@ void set_Hardware_version(unsigned int value)
             buf[2] = address;
             buf[3] = 0;
             buf[4] = CRC5(buf, 4*8);
-            //applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x, buf[4]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3], buf[4]);
+            //applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x, buf[4]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3], buf[4]);
 
             cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
             cmd_buf[1] = buf[4]<<24;
@@ -7469,7 +7469,7 @@ void set_Hardware_version(unsigned int value)
         }
         else
         {
-            applog(LOG_INFO,"actual_asic_number = %d, but it is error\n", actual_asic_number);
+            applog(LOG_DEBUG,"actual_asic_number = %d, but it is error\n", actual_asic_number);
             return -1;
         }
         return i;
@@ -7512,7 +7512,7 @@ void set_Hardware_version(unsigned int value)
         }
         else
         {
-            applog(LOG_INFO,"actual_core_number = %d, but it is error\n", actual_core_number);
+            applog(LOG_DEBUG,"actual_core_number = %d, but it is error\n", actual_core_number);
             return -1;
         }
         return i;
@@ -7526,7 +7526,7 @@ void set_Hardware_version(unsigned int value)
 
         dev->check_bit=0;
 
-        applog(LOG_INFO,"--- %s\n", __FUNCTION__);
+        applog(LOG_DEBUG,"--- %s\n", __FUNCTION__);
 
         dev->addrInterval = CHIP_ADDR_INTERVAL; // fix chip addr interval
         check_bit = dev->addrInterval - 1;
@@ -7566,7 +7566,7 @@ void set_Hardware_version(unsigned int value)
 
         dev->check_bit=0;
 
-        applog(LOG_INFO,"--- %s\n", __FUNCTION__);
+        applog(LOG_DEBUG,"--- %s\n", __FUNCTION__);
 
         dev->addrInterval = CHIP_ADDR_INTERVAL;
         check_bit = dev->addrInterval - 1;
@@ -7619,7 +7619,7 @@ void set_Hardware_version(unsigned int value)
                     buf[2] = ticket_mask & 0x1f;
                     buf[0] |= COMMAND_FOR_ALL;
                     buf[3] = CRC5(buf, 4*8 - 5);
-                    applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
+                    applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
 
                     cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
                     set_BC_command_buffer(cmd_buf);
@@ -7714,7 +7714,7 @@ void set_Hardware_version(unsigned int value)
 
         if(dev->baud == bauddiv)
         {
-            applog(LOG_INFO,"%s: the setting bauddiv(%d) is the same as before\n", __FUNCTION__, bauddiv);
+            applog(LOG_DEBUG,"%s: the setting bauddiv(%d) is the same as before\n", __FUNCTION__, bauddiv);
             return;
         }
 
@@ -7730,7 +7730,7 @@ void set_Hardware_version(unsigned int value)
                     buf[2] = bauddiv & 0x1f;
                     buf[0] |= COMMAND_FOR_ALL;
                     buf[3] = CRC5(buf, 4*8 - 5);
-                    applog(LOG_INFO,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
+                    applog(LOG_DEBUG,"%s: buf[0]=0x%x, buf[1]=0x%x, buf[2]=0x%x, buf[3]=0x%x\n", __FUNCTION__, buf[0], buf[1], buf[2], buf[3]);
 
                     cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
                     set_BC_command_buffer(cmd_buf);
@@ -7754,7 +7754,7 @@ void set_Hardware_version(unsigned int value)
                     cmd_buf[0] = buf[0]<<24 | buf[1]<<16 | buf[2]<<8 | buf[3];
                     cmd_buf[1] = buf[4]<<24 | buf[5]<<16 | buf[6]<<8 | buf[7];
                     cmd_buf[2] = buf[8]<<24;
-                    applog(LOG_INFO,"%s: cmd_buf[0]=0x%x, cmd_buf[1]=0x%x, cmd_buf[2]=0x%x\n", __FUNCTION__, cmd_buf[0], cmd_buf[1], cmd_buf[2]);
+                    applog(LOG_DEBUG,"%s: cmd_buf[0]=0x%x, cmd_buf[1]=0x%x, cmd_buf[2]=0x%x\n", __FUNCTION__, cmd_buf[0], cmd_buf[1], cmd_buf[2]);
 
                     set_BC_command_buffer(cmd_buf);
                     ret = get_BC_write_command();
@@ -8334,7 +8334,7 @@ void set_Hardware_version(unsigned int value)
                         {
                             nonce_num[i][j][nonce_times % TIMESLICE] = dev->chain_asic_nonce[i][j];
                             avg_num += dev->chain_asic_nonce[i][j];
-                            applog(LOG_INFO,"%s: chain %d asic %d asic_nonce_num %d", __FUNCTION__, i,j,dev->chain_asic_nonce[i][j]);
+                            applog(LOG_DEBUG,"%s: chain %d asic %d asic_nonce_num %d", __FUNCTION__, i,j,dev->chain_asic_nonce[i][j]);
                         }
                     }
                 }
@@ -8348,7 +8348,7 @@ void set_Hardware_version(unsigned int value)
 
                 if (asic_num != 0)
                 {
-                    applog(LOG_INFO,"%s: avg_num %d asic_num %d", __FUNCTION__, avg_num,asic_num);
+                    applog(LOG_DEBUG,"%s: avg_num %d asic_num %d", __FUNCTION__, avg_num,asic_num);
                     avg_num = avg_num / asic_num / 8;
                     avg_num = 10;
                 }
@@ -8444,7 +8444,7 @@ void set_Hardware_version(unsigned int value)
             //gateblk[3] = CRC5(gateblk, 4*8 - 5);
             gateblk[3] = 0x80;  // MMEN=1
             gateblk[3] = 0x80 | (0x1f & CRC5(gateblk, 4*8 - 5));
-            applog(LOG_INFO,"%s: gateblk[0]=0x%x, gateblk[1]=0x%x, gateblk[2]=0x%x, gateblk[3]=0x%x\n", __FUNCTION__, gateblk[0], gateblk[1], gateblk[2], gateblk[3]);
+            applog(LOG_DEBUG,"%s: gateblk[0]=0x%x, gateblk[1]=0x%x, gateblk[2]=0x%x, gateblk[3]=0x%x\n", __FUNCTION__, gateblk[0], gateblk[1], gateblk[2], gateblk[3]);
             cmd_buf[0] = gateblk[0]<<24 | gateblk[1]<<16 | gateblk[2]<<8 | gateblk[3];
 
             memset(data, 0x00, TW_WRITE_COMMAND_LEN);
@@ -8472,7 +8472,7 @@ void set_Hardware_version(unsigned int value)
                             }
                             else    //work fifo is full, wait for 50ms
                             {
-                                //applog(LOG_INFO,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
+                                //applog(LOG_DEBUG,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
                                 cgsleep_us(1000);
                             }
                         }
@@ -8512,7 +8512,7 @@ void set_Hardware_version(unsigned int value)
                             {
                                 buf[j] = work_id++;
                             }
-                            //applog(LOG_INFO,"buf[%d] = 0x%x\n", j, buf[i]);
+                            //applog(LOG_DEBUG,"buf[%d] = 0x%x\n", j, buf[i]);
                         }
 
                         set_TW_write_command(buf);
@@ -8573,7 +8573,7 @@ void set_Hardware_version(unsigned int value)
                     for(m=0; m<loop; m++)
                     {
                         wati_count=0;
-                        //applog(LOG_INFO,"%s: m = %d\n", __FUNCTION__, m);
+                        //applog(LOG_DEBUG,"%s: m = %d\n", __FUNCTION__, m);
                         do
                         {
                             work_fifo_ready = get_buffer_space();
@@ -8584,7 +8584,7 @@ void set_Hardware_version(unsigned int value)
                             }
                             else    //work fifo is full, wait for 50ms
                             {
-                                //applog(LOG_INFO,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
+                                //applog(LOG_DEBUG,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
                                 cgsleep_us(1000);
                                 wati_count++;
 
@@ -8672,7 +8672,7 @@ void set_Hardware_version(unsigned int value)
             //gateblk[3] = CRC5(gateblk, 4*8 - 5);
             gateblk[3] = 0x80;  // MMEN=1
             gateblk[3] = 0x80 | (0x1f & CRC5(gateblk, 4*8 - 5));
-            applog(LOG_INFO,"%s: gateblk[0]=0x%x, gateblk[1]=0x%x, gateblk[2]=0x%x, gateblk[3]=0x%x\n", __FUNCTION__, gateblk[0], gateblk[1], gateblk[2], gateblk[3]);
+            applog(LOG_DEBUG,"%s: gateblk[0]=0x%x, gateblk[1]=0x%x, gateblk[2]=0x%x, gateblk[3]=0x%x\n", __FUNCTION__, gateblk[0], gateblk[1], gateblk[2], gateblk[3]);
             cmd_buf[0] = gateblk[0]<<24 | gateblk[1]<<16 | gateblk[2]<<8 | gateblk[3];
 
             memset(data, 0x00, TW_WRITE_COMMAND_LEN);
@@ -8701,7 +8701,7 @@ void set_Hardware_version(unsigned int value)
                             }
                             else    //work fifo is full, wait for 50ms
                             {
-                                //applog(LOG_INFO,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
+                                //applog(LOG_DEBUG,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
                                 cgsleep_us(1000);
                             }
                         }
@@ -8741,7 +8741,7 @@ void set_Hardware_version(unsigned int value)
                             {
                                 buf[j] = work_id++;
                             }
-                            //applog(LOG_INFO,"buf[%d] = 0x%x\n", j, buf[i]);
+                            //applog(LOG_DEBUG,"buf[%d] = 0x%x\n", j, buf[i]);
                         }
 
                         set_TW_write_command(buf);
@@ -8803,7 +8803,7 @@ void set_Hardware_version(unsigned int value)
                     for(m=0; m<loop; m++)
                     {
                         wati_count=0;
-                        //applog(LOG_INFO,"%s: m = %d\n", __FUNCTION__, m);
+                        //applog(LOG_DEBUG,"%s: m = %d\n", __FUNCTION__, m);
                         do
                         {
                             work_fifo_ready = get_buffer_space();
@@ -8814,7 +8814,7 @@ void set_Hardware_version(unsigned int value)
                             }
                             else    //work fifo is full, wait for 50ms
                             {
-                                //applog(LOG_INFO,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
+                                //applog(LOG_DEBUG,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
                                 cgsleep_us(1000);
                                 wati_count++;
 
@@ -8897,7 +8897,7 @@ void set_Hardware_version(unsigned int value)
             //gateblk[3] = CRC5(gateblk, 4*8 - 5);
             gateblk[3] = 0x80;  // MMEN=1
             gateblk[3] = 0x80 | (0x1f & CRC5(gateblk, 4*8 - 5));
-            applog(LOG_INFO,"%s: gateblk[0]=0x%x, gateblk[1]=0x%x, gateblk[2]=0x%x, gateblk[3]=0x%x\n", __FUNCTION__, gateblk[0], gateblk[1], gateblk[2], gateblk[3]);
+            applog(LOG_DEBUG,"%s: gateblk[0]=0x%x, gateblk[1]=0x%x, gateblk[2]=0x%x, gateblk[3]=0x%x\n", __FUNCTION__, gateblk[0], gateblk[1], gateblk[2], gateblk[3]);
             cmd_buf[0] = gateblk[0]<<24 | gateblk[1]<<16 | gateblk[2]<<8 | gateblk[3];
 
             memset(data, 0x00, TW_WRITE_COMMAND_LEN);
@@ -8926,7 +8926,7 @@ void set_Hardware_version(unsigned int value)
                             }
                             else    //work fifo is full, wait for 50ms
                             {
-                                //applog(LOG_INFO,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
+                                //applog(LOG_DEBUG,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
                                 cgsleep_us(1000);
                             }
                         }
@@ -8966,7 +8966,7 @@ void set_Hardware_version(unsigned int value)
                             {
                                 buf[j] = work_id++;
                             }
-                            //applog(LOG_INFO,"buf[%d] = 0x%x\n", j, buf[i]);
+                            //applog(LOG_DEBUG,"buf[%d] = 0x%x\n", j, buf[i]);
                         }
 
                         set_TW_write_command(buf);
@@ -9039,7 +9039,7 @@ void set_Hardware_version(unsigned int value)
                         }
 
                         wati_count=0;
-                        //applog(LOG_INFO,"%s: m = %d\n", __FUNCTION__, m);
+                        //applog(LOG_DEBUG,"%s: m = %d\n", __FUNCTION__, m);
                         do
                         {
                             work_fifo_ready = get_buffer_space();
@@ -9050,7 +9050,7 @@ void set_Hardware_version(unsigned int value)
                             }
                             else    //work fifo is full, wait for 50ms
                             {
-                                //applog(LOG_INFO,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
+                                //applog(LOG_DEBUG,"%s: chain%d work fifo not ready: 0x%x\n", __FUNCTION__, i, work_fifo_ready);
                                 cgsleep_us(1000);
                                 wati_count++;
 
@@ -9243,7 +9243,7 @@ void set_Hardware_version(unsigned int value)
             if(nonce_number)
             {
                 read_loop = nonce_number;
-                applog(LOG_INFO,"%s: read_loop = %d\n", __FUNCTION__, read_loop);
+                applog(LOG_DEBUG,"%s: read_loop = %d\n", __FUNCTION__, read_loop);
 
                 for(j=0; j<read_loop; j++)
                 {
@@ -9271,18 +9271,18 @@ void set_Hardware_version(unsigned int value)
                                     nonce_read_out.nonce_buffer[nonce_read_out.p_wr].midstate[m]  = *((unsigned char *)data_addr + MIDSTATE_OFFSET + m);
                                 }
 #ifdef DEBUG_LOG
-                                applog(LOG_INFO,"%s: buf[0] = 0x%x\n", __FUNCTION__, buf[0]);
-                                applog(LOG_INFO,"%s: work_id = 0x%x\n", __FUNCTION__, work_id);
-                                applog(LOG_INFO,"%s: nonce2_jobid_address = 0x%x\n", __FUNCTION__, nonce2_jobid_address);
-                                applog(LOG_INFO,"%s: data_addr = 0x%x\n", __FUNCTION__, data_addr);
-                                applog(LOG_INFO,"%s: nonce3 = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].nonce3);
-                                applog(LOG_INFO,"%s: job_id = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].job_id);
-                                applog(LOG_INFO,"%s: header_version = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].header_version);
-                                applog(LOG_INFO,"%s: nonce2 = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].nonce2);
+                                applog(LOG_DEBUG,"%s: buf[0] = 0x%x\n", __FUNCTION__, buf[0]);
+                                applog(LOG_DEBUG,"%s: work_id = 0x%x\n", __FUNCTION__, work_id);
+                                applog(LOG_DEBUG,"%s: nonce2_jobid_address = 0x%x\n", __FUNCTION__, nonce2_jobid_address);
+                                applog(LOG_DEBUG,"%s: data_addr = 0x%x\n", __FUNCTION__, data_addr);
+                                applog(LOG_DEBUG,"%s: nonce3 = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].nonce3);
+                                applog(LOG_DEBUG,"%s: job_id = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].job_id);
+                                applog(LOG_DEBUG,"%s: header_version = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].header_version);
+                                applog(LOG_DEBUG,"%s: nonce2 = 0x%x\n", __FUNCTION__, nonce_read_out.nonce_buffer[nonce_read_out.p_wr].nonce2);
 
                                 buf_hex = bin2hex(nonce_read_out.nonce_buffer[nonce_read_out.p_wr].midstate,32);
 
-                                applog(LOG_INFO,"%s: midstate: %s\n", __FUNCTION__, buf_hex);
+                                applog(LOG_DEBUG,"%s: midstate: %s\n", __FUNCTION__, buf_hex);
 
                                 free(buf_hex);
 #endif
@@ -9661,7 +9661,7 @@ void set_Hardware_version(unsigned int value)
         //check who control fan
         dev->fan_eft = config_parameter.fan_eft;
         dev->fan_pwm= config_parameter.fan_pwm_percent;
-        applog(LOG_INFO,"%s: fan_eft : %d	fan_pwm : %d\n", __FUNCTION__,dev->fan_eft,dev->fan_pwm);
+        applog(LOG_DEBUG,"%s: fan_eft : %d	fan_pwm : %d\n", __FUNCTION__,dev->fan_eft,dev->fan_pwm);
         if(config_parameter.fan_eft)
         {
             if((config_parameter.fan_pwm_percent >= 0) && (config_parameter.fan_pwm_percent <= 100))
@@ -9691,7 +9691,7 @@ void set_Hardware_version(unsigned int value)
 #endif
                 // for set_freq_auto test,set timeout when frequency equals 700M
                 //  dev->timeout = 0x1000000/calculate_core_number(dev->corenum)*dev->addrInterval/700*90/100;
-                applog(LOG_INFO,"dev->timeout = %d\n", dev->timeout);
+                applog(LOG_DEBUG,"dev->timeout = %d\n", dev->timeout);
             }
             else
             {
@@ -10029,21 +10029,21 @@ void set_Hardware_version(unsigned int value)
 
         if(config_parameter.token_type != INIT_CONFIG_TYPE)
         {
-            applog(LOG_INFO,"%s: config_parameter.token_type != 0x%x, it is 0x%x\n", __FUNCTION__, INIT_CONFIG_TYPE, config_parameter.token_type);
+            applog(LOG_DEBUG,"%s: config_parameter.token_type != 0x%x, it is 0x%x\n", __FUNCTION__, INIT_CONFIG_TYPE, config_parameter.token_type);
             return -1;
         }
 
         crc = CRC16((uint8_t*)(&config_parameter), sizeof(struct init_config) - sizeof(uint16_t));
         if(crc != config_parameter.crc)
         {
-            applog(LOG_INFO,"%s: config_parameter.crc = 0x%x, but we calculate it as 0x%x\n", __FUNCTION__, config_parameter.crc, crc);
+            applog(LOG_DEBUG,"%s: config_parameter.crc = 0x%x, but we calculate it as 0x%x\n", __FUNCTION__, config_parameter.crc, crc);
             return -2;
         }
 
         read_nonce_reg_id = calloc(1,sizeof(struct thr_info));
         if(thr_info_create(read_nonce_reg_id, NULL, get_nonce_and_register, read_nonce_reg_id))
         {
-            applog(LOG_INFO,"%s: create thread for get nonce and register from FPGA failed\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: create thread for get nonce and register from FPGA failed\n", __FUNCTION__);
             return -5;
         }
 
@@ -10255,7 +10255,7 @@ void set_Hardware_version(unsigned int value)
         pic_heart_beat = calloc(1,sizeof(struct thr_info));
         if(thr_info_create(pic_heart_beat, NULL, pic_heart_beat_func, pic_heart_beat))
         {
-            applog(LOG_INFO,"%s: create thread error for pic_heart_beat_func\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: create thread error for pic_heart_beat_func\n", __FUNCTION__);
             return -6;
         }
         pthread_detach(pic_heart_beat->pth);
@@ -10519,7 +10519,7 @@ void set_Hardware_version(unsigned int value)
         //check who control fan
         dev->fan_eft = config_parameter.fan_eft;
         dev->fan_pwm= config_parameter.fan_pwm_percent;
-        applog(LOG_INFO,"%s: fan_eft : %d  fan_pwm : %d\n", __FUNCTION__,dev->fan_eft,dev->fan_pwm);
+        applog(LOG_DEBUG,"%s: fan_eft : %d  fan_pwm : %d\n", __FUNCTION__,dev->fan_eft,dev->fan_pwm);
         if(config_parameter.fan_eft)
         {
             if((config_parameter.fan_pwm_percent >= 0) && (config_parameter.fan_pwm_percent <= 100))
@@ -10549,7 +10549,7 @@ void set_Hardware_version(unsigned int value)
 #endif
                 // for set_freq_auto test,set timeout when frequency equals 700M
                 //  dev->timeout = 0x1000000/calculate_core_number(dev->corenum)*dev->addrInterval/700*90/100;
-                applog(LOG_INFO,"dev->timeout = %d\n", dev->timeout);
+                applog(LOG_DEBUG,"dev->timeout = %d\n", dev->timeout);
             }
             else
             {
@@ -10834,7 +10834,7 @@ void set_Hardware_version(unsigned int value)
         read_temp_id = calloc(1,sizeof(struct thr_info));
         if(thr_info_create(read_temp_id, NULL, read_temp_func, read_temp_id))
         {
-            applog(LOG_INFO,"%s: create thread for read temp\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: create thread for read temp\n", __FUNCTION__);
             return -7;
         }
         pthread_detach(read_temp_id->pth);
@@ -10939,7 +10939,7 @@ void set_Hardware_version(unsigned int value)
         check_system_work_id = calloc(1,sizeof(struct thr_info));
         if(thr_info_create(check_system_work_id, NULL, check_system_work, check_system_work_id))
         {
-            applog(LOG_INFO,"%s: create thread for check system\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: create thread for check system\n", __FUNCTION__);
             return -6;
         }
         pthread_detach(check_system_work_id->pth);
@@ -11096,7 +11096,7 @@ void set_Hardware_version(unsigned int value)
         while((unsigned int)get_dhash_acc_control() & RUN_BIT)
         {
             cgsleep_ms(1);
-            applog(LOG_INFO,"%s: run bit is 1 after set it to 0", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: run bit is 1 after set it to 0", __FUNCTION__);
         }
 
         buf_hex = bin2hex((unsigned char *)dev->current_job_start_address,c_coinbase_padding);
@@ -11167,17 +11167,17 @@ void set_Hardware_version(unsigned int value)
 
         if(*(buf + 0) != SEND_JOB_TYPE)
         {
-            applog(LOG_INFO,"%s: SEND_JOB_TYPE is wrong : 0x%x\n", __FUNCTION__, *(buf + 0));
+            applog(LOG_DEBUG,"%s: SEND_JOB_TYPE is wrong : 0x%x\n", __FUNCTION__, *(buf + 0));
             return -1;
         }
 
         len = *((unsigned int *)buf + 4/sizeof(int));
-        applog(LOG_INFO,"%s: len = 0x%x\n", __FUNCTION__, len);
+        applog(LOG_DEBUG,"%s: len = 0x%x\n", __FUNCTION__, len);
 
         temp_buf = malloc(len + 8*sizeof(unsigned char));
         if(!temp_buf)
         {
-            applog(LOG_INFO,"%s: malloc buffer failed.\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: malloc buffer failed.\n", __FUNCTION__);
             return -2;
         }
         else
@@ -11198,7 +11198,7 @@ void set_Hardware_version(unsigned int value)
         }
         else
         {
-            applog(LOG_INFO,"%s: dev->current_job_start_address = 0x%x, but job_start_address_1 = 0x%x, job_start_address_2 = 0x%x\n", __FUNCTION__, dev->current_job_start_address, job_start_address_1, job_start_address_2);
+            applog(LOG_DEBUG,"%s: dev->current_job_start_address = 0x%x, but job_start_address_1 = 0x%x, job_start_address_2 = 0x%x\n", __FUNCTION__, dev->current_job_start_address, job_start_address_1, job_start_address_2);
             return -3;
         }
 
@@ -11215,12 +11215,12 @@ void set_Hardware_version(unsigned int value)
         coinbase_padding = malloc(coinbase_padding_len);
         if(!coinbase_padding)
         {
-            applog(LOG_INFO,"%s: malloc coinbase_padding failed.\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: malloc coinbase_padding failed.\n", __FUNCTION__);
             return -4;
         }
         else
         {
-            applog(LOG_INFO,"%s: coinbase_padding = 0x%x", __FUNCTION__, (unsigned int)coinbase_padding);
+            applog(LOG_DEBUG,"%s: coinbase_padding = 0x%x", __FUNCTION__, (unsigned int)coinbase_padding);
         }
 
         if(part_job->merkles_num)
@@ -11228,16 +11228,16 @@ void set_Hardware_version(unsigned int value)
             merkles_bin = malloc(part_job->merkles_num * MERKLE_BIN_LEN);
             if(!merkles_bin)
             {
-                applog(LOG_INFO,"%s: malloc merkles_bin failed.\n", __FUNCTION__);
+                applog(LOG_DEBUG,"%s: malloc merkles_bin failed.\n", __FUNCTION__);
                 return -5;
             }
             else
             {
-                applog(LOG_INFO,"%s: merkles_bin = 0x%x", __FUNCTION__, (unsigned int)merkles_bin);
+                applog(LOG_DEBUG,"%s: merkles_bin = 0x%x", __FUNCTION__, (unsigned int)merkles_bin);
             }
         }
 
-        //applog(LOG_INFO,"%s: copy coinbase into memory ...\n", __FUNCTION__);
+        //applog(LOG_DEBUG,"%s: copy coinbase into memory ...\n", __FUNCTION__);
         memset(coinbase_padding, 0, coinbase_padding_len);
         memcpy(coinbase_padding, buf + sizeof(struct part_of_job), part_job->coinbase_len);
         *(coinbase_padding + part_job->coinbase_len) = 0x80;
@@ -11249,7 +11249,7 @@ void set_Hardware_version(unsigned int value)
         for(i=0; i<coinbase_padding_len; i++)
         {
             *((unsigned char *)dev->current_job_start_address + i) = *(coinbase_padding + i);
-            //applog(LOG_INFO,"%s: coinbase_padding_in_ddr[%d] = 0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + i)));
+            //applog(LOG_DEBUG,"%s: coinbase_padding_in_ddr[%d] = 0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + i)));
         }
 
         /* check coinbase & padding in ddr */
@@ -11257,28 +11257,28 @@ void set_Hardware_version(unsigned int value)
         {
             if(*((unsigned char *)dev->current_job_start_address + i) != *(coinbase_padding + i))
             {
-                applog(LOG_INFO,"%s: coinbase_padding_in_ddr[%d] = 0x%x, but *(coinbase_padding + %d) = 0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + i)), i, *(coinbase_padding + i));
+                applog(LOG_DEBUG,"%s: coinbase_padding_in_ddr[%d] = 0x%x, but *(coinbase_padding + %d) = 0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + i)), i, *(coinbase_padding + i));
             }
         }
         l_merkles_num = c_merkles_num;
         c_merkles_num = part_job->merkles_num;
         if(part_job->merkles_num)
         {
-            applog(LOG_INFO,"%s: copy merkle bin into memory ...\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: copy merkle bin into memory ...\n", __FUNCTION__);
             memset(merkles_bin, 0, part_job->merkles_num * MERKLE_BIN_LEN);
             memcpy(merkles_bin, buf + sizeof(struct part_of_job) + part_job->coinbase_len , part_job->merkles_num * MERKLE_BIN_LEN);
 
             for(i=0; i<(part_job->merkles_num * MERKLE_BIN_LEN); i++)
             {
                 *((unsigned char *)dev->current_job_start_address + coinbase_padding_len + i) = *(merkles_bin + i);
-                //applog(LOG_INFO,"%s: merkles_in_ddr[%d] = 0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + coinbase_padding_len + i)));
+                //applog(LOG_DEBUG,"%s: merkles_in_ddr[%d] = 0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + coinbase_padding_len + i)));
             }
 
             for(i=0; i<(part_job->merkles_num * MERKLE_BIN_LEN); i++)
             {
                 if(*((unsigned char *)dev->current_job_start_address + coinbase_padding_len + i) != *(merkles_bin + i))
                 {
-                    applog(LOG_INFO,"%s: merkles_in_ddr[%d] = 0x%x, but *(merkles_bin + %d) =0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + coinbase_padding_len + i)), i, *(merkles_bin + i));
+                    applog(LOG_DEBUG,"%s: merkles_in_ddr[%d] = 0x%x, but *(merkles_bin + %d) =0x%x", __FUNCTION__, i, *(((unsigned char *)dev->current_job_start_address + coinbase_padding_len + i)), i, *(merkles_bin + i));
                 }
             }
         }
@@ -11287,7 +11287,7 @@ void set_Hardware_version(unsigned int value)
         while((unsigned int)get_dhash_acc_control() & RUN_BIT)
         {
             cgsleep_ms(1);
-            applog(LOG_INFO,"%s: run bit is 1 after set it to 0\n", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: run bit is 1 after set it to 0\n", __FUNCTION__);
             times++;
         }
         cgsleep_ms(1);
@@ -11297,12 +11297,12 @@ void set_Hardware_version(unsigned int value)
         if(dev->current_job_start_address == job_start_address_1)
         {
             set_job_start_address(PHY_MEM_JOB_START_ADDRESS_1);
-            //applog(LOG_INFO,"%s: dev->current_job_start_address = 0x%x\n", __FUNCTION__, (unsigned int)job_start_address_2);
+            //applog(LOG_DEBUG,"%s: dev->current_job_start_address = 0x%x\n", __FUNCTION__, (unsigned int)job_start_address_2);
         }
         else if(dev->current_job_start_address == job_start_address_2)
         {
             set_job_start_address(PHY_MEM_JOB_START_ADDRESS_2);
-            //applog(LOG_INFO,"%s: dev->current_job_start_address = 0x%x\n", __FUNCTION__, (unsigned int)job_start_address_1);
+            //applog(LOG_DEBUG,"%s: dev->current_job_start_address = 0x%x\n", __FUNCTION__, (unsigned int)job_start_address_1);
         }
 
         if(part_job->asic_diff_valid)
@@ -11382,7 +11382,7 @@ void set_Hardware_version(unsigned int value)
             free((unsigned char *)merkles_bin);
         }
 
-        applog(LOG_INFO,"--- %s end\n", __FUNCTION__);
+        applog(LOG_DEBUG,"--- %s end\n", __FUNCTION__);
         cgtime(&tv_send_job);
         return 0;
     }
@@ -11554,7 +11554,7 @@ void set_Hardware_version(unsigned int value)
                 pool_diff_bit++;
             }
             pool_diff_bit--;
-            applog(LOG_INFO,"%s: pool_diff:%d work_diff:%d pool_diff_bit:%d ...\n", __FUNCTION__,pool_diff,work->sdiff,pool_diff_bit);
+            applog(LOG_DEBUG,"%s: pool_diff:%d work_diff:%d pool_diff_bit:%d ...\n", __FUNCTION__,pool_diff,work->sdiff,pool_diff_bit);
         }
 
         if(net_diff != (uint64_t)current_diff)
@@ -11568,7 +11568,7 @@ void set_Hardware_version(unsigned int value)
                 net_diff_bit++;
             }
             net_diff_bit--;
-            applog(LOG_INFO,"%s:net_diff:%d current_diff:%d net_diff_bit %d ...\n", __FUNCTION__,net_diff,current_diff,net_diff_bit);
+            applog(LOG_DEBUG,"%s:net_diff:%d current_diff:%d net_diff_bit %d ...\n", __FUNCTION__,net_diff,current_diff,net_diff_bit);
         }
 
         uint32_t *hash2_32 = (uint32_t *)hash1;
@@ -11606,7 +11606,7 @@ void set_Hardware_version(unsigned int value)
             }
             //inc_hw_errors_with_diff(thr,(0x01UL << DEVICE_DIFF));
             //dev->chain_hw[chain_id]+=(0x01UL << DEVICE_DIFF);
-            applog(LOG_INFO,"%s: HASH2_32[7] != 0", __FUNCTION__);
+            applog(LOG_DEBUG,"%s: HASH2_32[7] != 0", __FUNCTION__);
             return 0;
         }
         for(i=0; i < 7; i++)
@@ -11624,7 +11624,7 @@ void set_Hardware_version(unsigned int value)
         {
             which_asic_nonce = (nonce >> (24 + dev->check_bit)) & 0xff;
             which_core_nonce = (nonce & 0x7f);
-            applog(LOG_INFO,"%s: chain %d which_asic_nonce %d which_core_nonce %d", __FUNCTION__, chain_id, which_asic_nonce, which_core_nonce);
+            applog(LOG_DEBUG,"%s: chain %d which_asic_nonce %d which_core_nonce %d", __FUNCTION__, chain_id, which_asic_nonce, which_core_nonce);
             dev->chain_asic_nonce[chain_id][which_asic_nonce]++;
             if(be32toh(hash2_32[6 - pool_diff_bit/32]) < ((uint32_t)0xffffffff >> (pool_diff_bit%32)))
             {
@@ -11686,7 +11686,7 @@ void set_Hardware_version(unsigned int value)
 
                 midstate[(7-(i/4))*4 + (i%4)] = nonce_read_out.nonce_buffer[nonce_read_out.p_rd].midstate[i];
             }
-            applog(LOG_INFO,"%s: job_id:0x%x   work_id:0x%x   nonce2:0x%llx   nonce3:0x%x   version:0x%x\n", __FUNCTION__,job_id, work_id,nonce2, nonce3,version);
+            applog(LOG_DEBUG,"%s: job_id:0x%x   work_id:0x%x   nonce2:0x%llx   nonce3:0x%x   version:0x%x\n", __FUNCTION__,job_id, work_id,nonce2, nonce3,version);
             struct work * work;
 
             struct pool *pool, *c_pool;
@@ -11723,10 +11723,10 @@ void set_Hardware_version(unsigned int value)
                 continue;
             }
 
-            applog(LOG_INFO,"%s: Chain ID J%d ...\n", __FUNCTION__, chain_id + 1);
+            applog(LOG_DEBUG,"%s: Chain ID J%d ...\n", __FUNCTION__, chain_id + 1);
             if( (given_id -2)> job_id && given_id < job_id)
             {
-                applog(LOG_INFO,"%s: job_id error ...\n", __FUNCTION__);
+                applog(LOG_DEBUG,"%s: job_id error ...\n", __FUNCTION__);
                 if(dev->chain_exist[chain_id] == 1)
                 {
 #ifdef DEBUG_LOG
@@ -11738,7 +11738,7 @@ void set_Hardware_version(unsigned int value)
                 continue;
             }
 
-            applog(LOG_INFO,"%s: given_id:%d job_id:%d switch:%d  ...\n", __FUNCTION__,given_id,job_id,given_id - job_id);
+            applog(LOG_DEBUG,"%s: given_id:%d job_id:%d switch:%d  ...\n", __FUNCTION__,given_id,job_id,given_id - job_id);
 
             switch (given_id - job_id)
             {
@@ -11752,7 +11752,7 @@ void set_Hardware_version(unsigned int value)
                     pool = pool_stratum2;
                     break;
                 default:
-                    applog(LOG_INFO,"%s: job_id non't found ...\n", __FUNCTION__);
+                    applog(LOG_DEBUG,"%s: job_id non't found ...\n", __FUNCTION__);
                     if(dev->chain_exist[chain_id] == 1)
                     {
 #ifdef DEBUG_LOG
@@ -11773,7 +11773,7 @@ void set_Hardware_version(unsigned int value)
         cgsleep_ms(1);
         if(h != 0)
         {
-            applog(LOG_INFO,"%s: hashes %u ...\n", __FUNCTION__,h * 0xffffffffull);
+            applog(LOG_DEBUG,"%s: hashes %u ...\n", __FUNCTION__,h * 0xffffffffull);
         }
         h = h * 0xffffffffull;
     }
@@ -12331,7 +12331,7 @@ void set_Hardware_version(unsigned int value)
         thr_info_cancel(read_nonce_reg_id);
         thr_info_cancel(read_temp_id);
         thr_info_cancel(pic_heart_beat);
-
+        
         ret = get_BC_write_command();   //disable null work
         ret &= ~BC_COMMAND_EN_NULL_WORK;
         set_BC_write_command(ret);

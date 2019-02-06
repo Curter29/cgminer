@@ -9,7 +9,7 @@
  */
 #include "config.h"
 #include <assert.h>
-
+	 
 #include <limits.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -33,7 +33,7 @@
 #include <windows.h>
 #include <io.h>
 #endif
-
+	 
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -42,7 +42,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <string.h>
-
+	 
 #include "elist.h"
 #include "miner.h"
 
@@ -91,7 +91,7 @@ static int chain_DataCount[BITMAIN_MAX_CHAIN_NUM];
 static int chain_ValidNonce[BITMAIN_MAX_CHAIN_NUM];
 static int chain_PassCount[BITMAIN_MAX_CHAIN_NUM];
 
-static int chain_vol_value[BITMAIN_MAX_CHAIN_NUM];	// the searching vol
+static int chain_vol_value[BITMAIN_MAX_CHAIN_NUM];	// the searching vol 
 static int chain_vol_final[BITMAIN_MAX_CHAIN_NUM];	// the final vol, need saved in PIC
 static int chain_vol_added[BITMAIN_MAX_CHAIN_NUM];	// how many vol added , recorded in PIC
 
@@ -178,7 +178,7 @@ static int load_testpatten_work(int id, int count)
 	unsigned char *workData;
 	unsigned char *zipData;
 	unsigned long zipLen;
-
+	
 	workData=(unsigned char *)malloc(DataLen);
 
 	fseek(cgpu.fps[id],0,SEEK_END);
@@ -202,7 +202,7 @@ static int load_testpatten_work(int id, int count)
     {
         if(subid >= count)
             break;
-
+		
         new_work = cgpu.works[id] + subid;
 
         memcpy((uint8_t *)(&new_work->nonce) ,workData+subid*48+44, 4);
@@ -210,7 +210,7 @@ static int load_testpatten_work(int id, int count)
 
         memcpy(new_work->midstate ,workData+subid*48, 32);
         memcpy(new_work->data ,workData+subid*48+32, 12);
-
+		
         new_work->id = subid;
         subid++;
     }
@@ -229,7 +229,7 @@ static int read_config()
     int i;
     file = fopen(CONFIG_FILE, "r");
 	char logstr[256];
-
+	
     while(fgets(str, sizeof(str) - 1 , file))
     {
         if(str[0] == '#' || str[1] == '#')
@@ -273,7 +273,7 @@ static int read_config()
         {
             temp += 5;
             sscanf(temp, "%d", &m_conf->Freq);
-
+			
 			m_conf->force_freq=0;
         }
         else if((temp = strstr(str, "freq_e="))!=NULL)
@@ -812,7 +812,7 @@ static int get_works()
     unsigned int OpenCoreNum3 = conf.OpenCoreNum3;
     unsigned int OpenCoreNum4 = conf.OpenCoreNum4;
     //getcwd(Path, 128);
-    //applog(LOG_INFO, "Path:%s\n", Path);
+    //applog(LOG_DEBUG, "Path:%s\n", Path);
 
     //printf("%s: loop = %d\n", __FUNCTION__, loop);
 
@@ -929,7 +929,7 @@ static int get_works()
         else
         {
             sprintf(strFilePath, "%s%02i.bin", cgpu.workdataPathPrefix, i+1);
-            //applog(LOG_INFO, "dir:%s\n", strFilePath);
+            //applog(LOG_DEBUG, "dir:%s\n", strFilePath);
         }
 
         cgpu.fps[i] = fopen(strFilePath, "rb");
@@ -939,7 +939,7 @@ static int get_works()
             return -1;
         }
         cgpu.subid[i] = load_testpatten_work(i, MAX_WORK);
-        //applog(LOG_INFO, "asic[%d] get work %d\n", i, cgpu.subid[i]);
+        //applog(LOG_DEBUG, "asic[%d] get work %d\n", i, cgpu.subid[i]);
         fclose(cgpu.fps[i]);
     }
 
@@ -953,7 +953,7 @@ static int get_works()
             record = i;
         }
     }
-    applog(LOG_INFO, "min work minertest[%d]:%d\n\n\n", record, cgpu.min_work_subid);
+    applog(LOG_DEBUG, "min work minertest[%d]:%d\n\n\n", record, cgpu.min_work_subid);
     if(conf.dataCount > cgpu.min_work_subid)
     {
         applog(LOG_ERR, "$$$$dataCount=%d, but min work subid=%d\n",
@@ -1008,7 +1008,7 @@ static int calculate_asic_number(unsigned int actual_asic_number)
     }
     else if((actual_asic_number > 32) && (actual_asic_number <= 64))
     {
-	        i = 64;
+	        i = 64;	
     }
     else if((actual_asic_number > 64) && (actual_asic_number <= 128))
     {
@@ -1016,7 +1016,7 @@ static int calculate_asic_number(unsigned int actual_asic_number)
     }
     else
     {
-        applog(LOG_INFO,"actual_asic_number = %d, but it is error\n", actual_asic_number);
+        applog(LOG_DEBUG,"actual_asic_number = %d, but it is error\n", actual_asic_number);
         return -1;
     }
     return i;
@@ -1059,7 +1059,7 @@ static int calculate_core_number(unsigned int actual_core_number)
     }
     else
     {
-        applog(LOG_INFO,"actual_core_number = %d, but it is error\n", actual_core_number);
+        applog(LOG_DEBUG,"actual_core_number = %d, but it is error\n", actual_core_number);
         return -1;
     }
     return i;
@@ -1245,12 +1245,12 @@ static int get_result(int chainIndex, int passCount, int validnonce)
 
     sprintf(logstr,"\n\n");
 	writeLogFile(logstr);
-
+	
     for(i = 0; i < loop; i++)
     {
         sprintf(logstr,"freq[%02d]=%d\t", i, get_freqvalue_by_index(getChainAsicFreqIndex(chainIndex,i)));
 		writeLogFile(logstr);
-
+		
         if(i % 8 == 7)
         {
             sprintf(logstr,"\n");
@@ -1265,7 +1265,7 @@ static int get_result(int chainIndex, int passCount, int validnonce)
     {
         ret = (~0x00000001) & ret;
     }
-
+    
     sprintf(logstr,"total valid nonce number:%d\n", valid_nonce_num[chainIndex]);
 	writeLogFile(logstr);
     sprintf(logstr,"total send work number:%d\n", send_work_num[chainIndex]);
@@ -1327,7 +1327,7 @@ static int send_func_all()
 	bool isSendOver=false;
 	int wait_counter=0;
 	bool sendStartFlag[BITMAIN_MAX_CHAIN_NUM];
-
+	
 	for(i=0;i<BITMAIN_MAX_CHAIN_NUM;i++)
 	{
 		index[i]=0;
@@ -1342,14 +1342,14 @@ static int send_func_all()
 	    {
 	    	if(cgpu.chain_exist[chainIndex] == 0 || (!sendStartFlag[chainIndex]))
 				continue;
-
+			
 	        while(which_asic[chainIndex] < CHAIN_ASIC_NUM)
 	        {
 	            work_fifo_ready = get_buffer_space();
 	            if(work_fifo_ready & (0x1 << chainIndex))   // work fifo is not full, we can send work
 	            {
 	            	wait_counter=0;	// clear wait fifo counter
-
+					
 	                if(cgpu.CommandMode)    // fil mode
 	                {
 	                    memset(buf, 0x0, TW_WRITE_COMMAND_LEN/sizeof(unsigned int));
@@ -1380,14 +1380,14 @@ static int send_func_all()
 	                        {
 	                            buf[j] = index[chainIndex];
 	                        }
-	                        //applog(LOG_INFO,"%s: buf[%d] = 0x%08x\n", __FUNCTION__, j, buf[j]);
+	                        //applog(LOG_DEBUG,"%s: buf[%d] = 0x%08x\n", __FUNCTION__, j, buf[j]);
 	                    }
 
 #ifndef DEBUG_XILINX_NONCE_NOTENOUGH
 						pthread_mutex_lock(&opencore_readtemp_mutex);
-#endif
+#endif						
 	                    set_TW_write_command(buf);
-
+						
 #ifndef DEBUG_XILINX_NONCE_NOTENOUGH
 						pthread_mutex_unlock(&opencore_readtemp_mutex);
 #endif
@@ -1435,7 +1435,7 @@ static int send_func_all()
 							pthread_mutex_lock(&opencore_readtemp_mutex);
 #endif
 	                        set_TW_write_command_vil(buf_vil);
-
+							
 #ifndef DEBUG_XILINX_NONCE_NOTENOUGH
 							pthread_mutex_unlock(&opencore_readtemp_mutex);
 #endif
@@ -1480,7 +1480,7 @@ static int send_func_all()
 							pthread_mutex_lock(&opencore_readtemp_mutex);
 #endif
 	                        set_TW_write_command_vil(buf_vil);
-
+							
 #ifndef DEBUG_XILINX_NONCE_NOTENOUGH
 							pthread_mutex_unlock(&opencore_readtemp_mutex);
 #endif
@@ -1513,13 +1513,13 @@ static int send_func_all()
 			}
 	    }
 		usleep(5000);
-
+		
 		isSendOver=true;
 		for(i=0;i<BITMAIN_MAX_CHAIN_NUM;i++)
 		{
 			if(cgpu.chain_exist[i] == 0 || (!StartSendFlag[i]))
 				continue;
-
+			
 	    	if(index[i] < chain_DataCount[i])
 	    	{
 	    		isSendOver=false;
@@ -1531,7 +1531,7 @@ static int send_func_all()
 	{
 		if(cgpu.chain_exist[i] == 0 || (!StartSendFlag[i]))
 			continue;
-
+		
 		StartSendFlag[i]=false;	// when send over , must set this flag to false!!!
 		sprintf(logstr,"get send work num :%d on Chain[%d]\n", send_work_num[i],i);
 		writeLogFile(logstr);
@@ -1549,7 +1549,7 @@ static void *receive_func(void *arg)
 {
     unsigned int j=0, n=0, nonce_number = 0, read_loop=0;
     unsigned int buf[2] = {0,0};
-
+    
     uint8_t which_asic_nonce = 0;
     uint8_t which_core_nonce = 0;
     uint8_t whose_nonce = 0, nonce_index=0;
@@ -1576,7 +1576,7 @@ static void *receive_func(void *arg)
 			read_loop=0;
 		    buf[0]=0;
 			buf[1]=0;
-
+		    
 		    which_asic_nonce = 0;
 		    which_core_nonce = 0;
 		    whose_nonce = 0;
@@ -1585,25 +1585,25 @@ static void *receive_func(void *arg)
 		    OpenCoreNum2 = conf.OpenCoreNum2;
 		    OpenCoreNum3 = conf.OpenCoreNum3;
 		    OpenCoreNum4 = conf.OpenCoreNum4;
-
+			
 		    memset(repeated_nonce_id, 0xff, sizeof(repeated_nonce_id));
 			memset(last_nonce,0x00,sizeof(last_nonce));
 			memset(llast_nonce,0x00,sizeof(llast_nonce));
 			memset(work_id,0x00,sizeof(work_id));
 			memset(m_nonce,0x00,sizeof(m_nonce));
-
+			
         	usleep(100000);
             continue;
         }
-
+		
         read_loop = 0;
 
         nonce_number = get_nonce_number_in_fifo() & MAX_NONCE_NUMBER_IN_FIFO;
-        //applog(LOG_INFO,"%s: --- nonce_number = %d\n", __FUNCTION__, nonce_number);
+        //applog(LOG_DEBUG,"%s: --- nonce_number = %d\n", __FUNCTION__, nonce_number);
         if(nonce_number>0)
         {
             read_loop = nonce_number;
-            //applog(LOG_INFO,"%s: read_loop = %d\n", __FUNCTION__, read_loop);
+            //applog(LOG_DEBUG,"%s: read_loop = %d\n", __FUNCTION__, read_loop);
 
             for(j=0; j<read_loop; j++)
             {
@@ -1758,7 +1758,7 @@ static void *receive_func(void *arg)
 
 							if(work_id[chainIndex]>=MAX_WORK)
 								continue;
-
+							
                             m_nonce[chainIndex] = (cgpu.works[nonce_index] + work_id[chainIndex])->nonce;
                             //printf("%s: m_nonce = 0x%08x\n", __FUNCTION__, m_nonce);
 
@@ -1848,7 +1848,7 @@ static bool doTestBoard(int test_times)
 	memset(send_work_num, 0, sizeof(send_work_num));
 
 	total_valid_nonce_num=0;
-
+	
 	start_receive=true;
 
 	FOR_LOOP_CHAIN
@@ -1859,7 +1859,7 @@ static bool doTestBoard(int test_times)
 #ifndef T9_18
 	sprintf(logstr,"Check voltage total rate=%d\n",GetTotalRate());
 	writeLogFile(logstr);
-
+		
 	for(i=0; i < BITMAIN_MAX_CHAIN_NUM; i++)  // here must use i from 0 in for loop, because we use j to get the index as config file's voltage value
 	{
 		if(cgpu.chain_exist[i]==0)
@@ -1868,7 +1868,7 @@ static bool doTestBoard(int test_times)
 		pthread_mutex_lock(&iic_mutex);
 		vol_pic=get_pic_voltage(i);
 		pthread_mutex_unlock(&iic_mutex);
-
+		
 		vol_value = getVolValueFromPICvoltage(vol_pic);
 
 		chain_vol_value[i]=(vol_value/10)*10;	// must record current voltage!!!
@@ -1896,7 +1896,7 @@ static bool doTestBoard(int test_times)
 		}
 	}
 #endif
-
+	
     reset_work_data();
 
 	cgpu.CommandMode = 0;
@@ -1905,27 +1905,27 @@ static bool doTestBoard(int test_times)
 	cgpu.real_asic_num = CHAIN_ASIC_NUM;
 	cgpu.core_num = conf.core;
 
-	pthread_mutex_lock(&opencore_readtemp_mutex);
+	pthread_mutex_lock(&opencore_readtemp_mutex);	
 	FOR_LOOP_CHAIN
 	{
 		if(cgpu.chain_exist[i]==0)
 			continue;
-
+		
 		cgpu.chain_asic_num[i]=getChainAsicNum(i);
 
 		if(chain_need_opencore[i])
 		{
 			sprintf(logstr,"do open core on Chain[%d]...\n",i);
 			writeLogFile(logstr);
-
+			
 			open_core_one_chain(i,true);
-
+			
 			sprintf(logstr,"Done open core on Chain[%d]!\n",i);
 			writeLogFile(logstr);
 		}
 	}
 	pthread_mutex_unlock(&opencore_readtemp_mutex);
-
+	
 	// before the first time for sending work, reset the FPGA's nonce fifo
     if(!gBegin_get_nonce)
     {
@@ -2019,7 +2019,7 @@ static bool doTestBoard(int test_times)
 		else
 		{
 			result_flag=false;
-
+			
 			sprintf(logstr,"Test Patten on chain[%d]: FAILED!\n",i);
 			writeLogFile(logstr);
 
@@ -2093,9 +2093,9 @@ bool clement_doTestBoard(bool showlog)
 	int rebootTestNum;	// for searching process, to reboot 3times to check hashrate.
 	int restartMinerNum;	// the number of chances to reboot miner, for sometime hashrate is low when first startup.
 	bool result_flag;
-
+	
 	showLogToKernelLog=showlog;
-
+	
 	if(init_once>0)
 	{
 	    ret = cgpu_init();
@@ -2104,7 +2104,7 @@ bool clement_doTestBoard(bool showlog)
 	    	printf("cgpu_init Error!\n");
 	        return false;
 	    }
-
+		
 	    ret = configMiner();
 	    if(ret < 0)
 	    {
@@ -2113,7 +2113,7 @@ bool clement_doTestBoard(bool showlog)
 	    }
 
 		init_once=0;
-
+	
 		printf("single board test start\n");
 
 		Conf.DataCount=conf.dataCount=TESTMODE_PATTEN_NUM;	// fixed to 114
@@ -2125,7 +2125,7 @@ bool clement_doTestBoard(bool showlog)
 		Conf.ValidNonce3=conf.ValidNonce3=TESTMODE_NONCE_NUM;
 
 		ExitFlag=false;
-
+		
 		receiveExit=false;
 		pthread_create(&cgpu.receive_id, NULL, receive_func, &cgpu);
 
@@ -2134,7 +2134,7 @@ bool clement_doTestBoard(bool showlog)
 	    	StartSendFlag[i]=false;
 	    }
 	}
-
+	
 	for(i=0;i<BITMAIN_MAX_CHAIN_NUM;i++)
 	{
 		testModeOKCounter[i]=0;
@@ -2149,7 +2149,7 @@ bool clement_doTestBoard(bool showlog)
 		chain_vol_final[i]=0;
 		chain_vol_added[i]=0;
 		search_freq_result[i]=true;
-
+		
 		chain_DataCount[i]=TESTMODE_PATTEN_NUM;	// when seaching base freq, we use 8*144 patten on chip
 		chain_ValidNonce[i]=TESTMODE_NONCE_NUM;
 		chain_PassCount[i]=TESTMODE_PATTEN_NUM;
@@ -2160,10 +2160,10 @@ bool clement_doTestBoard(bool showlog)
 	k=0;
 	do{
 		k++;
-
+		
 		sprintf(logstr,"do heat board 8xPatten for %d times\n",k);
 		writeLogFile(logstr);
-
+	
 		for(i=0;i<BITMAIN_MAX_CHAIN_NUM;i++)
 		{
 	    	for(j=0; j<256; j++)
@@ -2174,19 +2174,19 @@ bool clement_doTestBoard(bool showlog)
 
 			// force to test all boards at any time
 			search_freq_result[i]=true;
-
+			
 			chain_DataCount[i]=TESTMODE_PATTEN_NUM;	// when seaching base freq, we use 8*144 patten on chip
 			chain_ValidNonce[i]=TESTMODE_NONCE_NUM;
 			chain_PassCount[i]=TESTMODE_PATTEN_NUM;
 		}
 
 		result_flag=doTestBoard(k);
-
+		
 		for(i=0; i < BITMAIN_MAX_CHAIN_NUM; i++)
 		{
 			if(cgpu.chain_exist[i]==0)
 				continue;
-
+			
 			if(search_freq_result[i])
 			{
 				testModeOKCounter[i]++;
@@ -2208,7 +2208,7 @@ bool clement_doTestBoard(bool showlog)
 		result_flag=false;
 		someBoardUpVoltage=true;
 	}
-
+	
 	set_PWM(100);	// when exit preheat, set full speed of fan
 	return result_flag;
 }
@@ -2224,7 +2224,7 @@ bool clement_doTestBoardOnce(bool showlog)
 	int restartMinerNum;	// the number of chances to reboot miner, for sometime hashrate is low when first startup.
 
 	showLogToKernelLog=showlog;
-
+	
 	if(init_once>0)
 	{
 	    ret = cgpu_init();
@@ -2233,7 +2233,7 @@ bool clement_doTestBoardOnce(bool showlog)
 	    	printf("cgpu_init Error!\n");
 	        return false;
 	    }
-
+		
 	    ret = configMiner();
 	    if(ret < 0)
 	    {
@@ -2242,7 +2242,7 @@ bool clement_doTestBoardOnce(bool showlog)
 	    }
 
 		init_once=0;
-
+	
 		printf("single board test start\n");
 
 		Conf.DataCount=conf.dataCount=TESTMODE_PATTEN_NUM;	// fixed to 114
@@ -2254,7 +2254,7 @@ bool clement_doTestBoardOnce(bool showlog)
 		Conf.ValidNonce3=conf.ValidNonce3=TESTMODE_NONCE_NUM;
 
 		ExitFlag=false;
-
+		
 		receiveExit=false;
 		pthread_create(&cgpu.receive_id, NULL, receive_func, &cgpu);
 
@@ -2263,7 +2263,7 @@ bool clement_doTestBoardOnce(bool showlog)
 	    	StartSendFlag[i]=false;
 	    }
 	}
-
+	
 	for(i=0;i<BITMAIN_MAX_CHAIN_NUM;i++)
 	{
 		testModeOKCounter[i]=0;
@@ -2278,7 +2278,7 @@ bool clement_doTestBoardOnce(bool showlog)
 		chain_vol_final[i]=0;
 		chain_vol_added[i]=0;
 		search_freq_result[i]=true;
-
+		
 		chain_DataCount[i]=TESTMODE_PATTEN_NUM;	// when seaching base freq, we use 8*144 patten on chip
 		chain_ValidNonce[i]=TESTMODE_NONCE_NUM;
 		chain_PassCount[i]=TESTMODE_PATTEN_NUM;
@@ -2287,12 +2287,12 @@ bool clement_doTestBoardOnce(bool showlog)
 	}
 
 	doTestBoard(0);
-
+	
 	for(i=0; i < BITMAIN_MAX_CHAIN_NUM; i++)
 	{
 		if(cgpu.chain_exist[i]==0)
 			continue;
-
+		
 		if(search_freq_result[i])
 		{
 			testModeOKCounter[i]++;

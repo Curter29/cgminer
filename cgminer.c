@@ -722,7 +722,7 @@ void adjust_quota_gcd(void)
     }
 
     global_quota_gcd = gcd;
-    applog(LOG_INFO, "Global quota greatest common denominator set to %lu", gcd);
+    applog(LOG_DEBUG, "Global quota greatest common denominator set to %lu", gcd);
 }
 
 
@@ -1034,7 +1034,7 @@ static char *set_url(char *arg)
     if (strstr(pool->rpc_url, ".nicehash.com") || strstr(pool->rpc_url, "#xnsub"))
     {
         pool->extranonce_subscribe = true;
-        applog(LOG_INFO, "Pool %d extranonce subscribing enabled.", pool->pool_no);
+        applog(LOG_DEBUG, "Pool %d extranonce subscribing enabled.", pool->pool_no);
     }
 
     return NULL;
@@ -1181,7 +1181,7 @@ static char *set_extranonce_subscribe(char *arg)
     }
 
     pool = pools[total_extranonce - 1];
-    applog(LOG_INFO, "Enable extranonce subscribe on %d", pool->pool_no);
+    applog(LOG_DEBUG, "Enable extranonce subscribe on %d", pool->pool_no);
     opt_set_bool(&pool->extranonce_subscribe);
 
     return NULL;
@@ -2295,14 +2295,14 @@ static void update_gbt(struct pool *pool)
         pool->getwork_requested++;
         if (rc)
         {
-            applog(LOG_INFO, "Successfully retrieved and updated GBT from pool %u %s",
+            applog(LOG_DEBUG, "Successfully retrieved and updated GBT from pool %u %s",
                    pool->pool_no, pool->rpc_url);
             if (pool == current_pool())
                 opt_work_update = true;
         }
         else
         {
-            applog(LOG_INFO, "Successfully retrieved but FAILED to decipher GBT from pool %u %s",
+            applog(LOG_DEBUG, "Successfully retrieved but FAILED to decipher GBT from pool %u %s",
                    pool->pool_no, pool->rpc_url);
         }
         json_decref(val);
@@ -2310,7 +2310,7 @@ static void update_gbt(struct pool *pool)
     }
     else
     {
-        applog(LOG_INFO, "FAILED to update GBT from pool %u %s",
+        applog(LOG_DEBUG, "FAILED to update GBT from pool %u %s",
                pool->pool_no, pool->rpc_url);
     }
     curl_easy_cleanup(curl);
@@ -2358,8 +2358,8 @@ static void gen_gbt_work(struct pool *pool, struct work *work)
     {
         char *header = bin2hex(work->data, 128);
 
-        applog(LOG_INFO, "Generated GBT header %s", header);
-        applog(LOG_INFO, "Work coinbase %s", work->coinbase);
+        applog(LOG_DEBUG, "Generated GBT header %s", header);
+        applog(LOG_DEBUG, "Work coinbase %s", work->coinbase);
         free(header);
     }
 
@@ -2411,17 +2411,17 @@ static bool gbt_decode(struct pool *pool, json_t *res_val)
         return false;
     }
 
-    applog(LOG_INFO, "previousblockhash: %s", previousblockhash);
-    applog(LOG_INFO, "target: %s", target);
-    applog(LOG_INFO, "coinbasetxn: %s", coinbasetxn);
-    applog(LOG_INFO, "longpollid: %s", longpollid);
-    applog(LOG_INFO, "expires: %d", expires);
-    applog(LOG_INFO, "version: %d", version);
-    applog(LOG_INFO, "curtime: %d", curtime);
-    applog(LOG_INFO, "submitold: %s", submitold ? "true" : "false");
-    applog(LOG_INFO, "bits: %s", bits);
+    applog(LOG_DEBUG, "previousblockhash: %s", previousblockhash);
+    applog(LOG_DEBUG, "target: %s", target);
+    applog(LOG_DEBUG, "coinbasetxn: %s", coinbasetxn);
+    applog(LOG_DEBUG, "longpollid: %s", longpollid);
+    applog(LOG_DEBUG, "expires: %d", expires);
+    applog(LOG_DEBUG, "version: %d", version);
+    applog(LOG_DEBUG, "curtime: %d", curtime);
+    applog(LOG_DEBUG, "submitold: %s", submitold ? "true" : "false");
+    applog(LOG_DEBUG, "bits: %s", bits);
     if (workid)
-        applog(LOG_INFO, "workid: %s", workid);
+        applog(LOG_DEBUG, "workid: %s", workid);
 
     cg_wlock(&pool->gbt_lock);
     free(pool->coinbasetxn);
@@ -2487,7 +2487,7 @@ static bool getwork_decode(json_t *res_val, struct work *work)
     if (!jobj_binary(res_val, "midstate", work->midstate, sizeof(work->midstate), false))
     {
         // Calculate it ourselves
-        applog(LOG_INFO, "Calculating midstate locally");
+        applog(LOG_DEBUG, "Calculating midstate locally");
         calc_midstate(work);
     }
 
@@ -2615,7 +2615,7 @@ static void gbt_merkle_bins(struct pool *pool, json_t *transaction_arr)
         for (i = 0; i < pool->merkles; i++)
         {
             __bin2hex(hashhex, pool->merklebin + i * 32, 32);
-            applog(LOG_INFO, "MH%d %s",i, hashhex);
+            applog(LOG_DEBUG, "MH%d %s",i, hashhex);
         }
     }
     applog(LOG_INFO, "Stored %d transactions from pool %d", pool->transactions,
@@ -2662,13 +2662,13 @@ static bool gbt_solo_decode(struct pool *pool, json_t *res_val)
         return false;
     }
 
-    applog(LOG_INFO, "previousblockhash: %s", previousblockhash);
-    applog(LOG_INFO, "target: %s", target);
-    applog(LOG_INFO, "version: %d", version);
-    applog(LOG_INFO, "curtime: %d", curtime);
-    applog(LOG_INFO, "bits: %s", bits);
-    applog(LOG_INFO, "height: %d", height);
-    applog(LOG_INFO, "flags: %s", flags);
+    applog(LOG_DEBUG, "previousblockhash: %s", previousblockhash);
+    applog(LOG_DEBUG, "target: %s", target);
+    applog(LOG_DEBUG, "version: %d", version);
+    applog(LOG_DEBUG, "curtime: %d", curtime);
+    applog(LOG_DEBUG, "bits: %s", bits);
+    applog(LOG_DEBUG, "height: %d", height);
+    applog(LOG_DEBUG, "flags: %s", flags);
 
     cg_wlock(&pool->gbt_lock);
     hex2bin(hash_swap, previousblockhash, 32);
@@ -3469,7 +3469,7 @@ static void share_result(
         pool->last_share_time      = cgpu->last_share_pool_time;
         pool->last_share_diff      = work->work_difficulty;
 
-        applog(LOG_INFO, "PROOF OF WORK RESULT: true (yay!!!)");
+        applog(LOG_DEBUG, "PROOF OF WORK RESULT: true (yay!!!)");
 
         if (!QUIET)
         {
@@ -3525,7 +3525,7 @@ static void share_result(
         pool->seq_rejects++;
         mutex_unlock(&stats_lock);
 
-        applog(LOG_INFO, "PROOF OF WORK RESULT: false (booooo)");
+        applog(LOG_DEBUG, "PROOF OF WORK RESULT: false (booooo)");
 
         if (!QUIET)
         {
@@ -3741,7 +3741,7 @@ static bool submit_upstream_work(struct work *work, CURL *curl, bool resubmit)
     }
     else
         s = realloc_strcat(s, "\"]}");
-    applog(LOG_INFO, "DBG: sending %s submit RPC call: %s", pool->rpc_url, s);
+    applog(LOG_DEBUG, "DBG: sending %s submit RPC call: %s", pool->rpc_url, s);
     s = realloc_strcat(s, "\n");
 
     cgtime(&tv_submit);
@@ -3867,7 +3867,7 @@ static bool get_upstream_work(struct work *work, CURL *curl)
 
     url = pool->rpc_url;
 
-    applog(LOG_INFO, "DBG: sending %s get RPC call: %s", url, pool->rpc_req);
+    applog(LOG_DEBUG, "DBG: sending %s get RPC call: %s", url, pool->rpc_req);
 
     cgtime(&work->tv_getwork);
 
@@ -3879,10 +3879,10 @@ static bool get_upstream_work(struct work *work, CURL *curl)
     {
         rc = work_decode(pool, work, val);
         if (unlikely(!rc))
-            applog(LOG_INFO, "Failed to decode work in get_upstream_work");
+            applog(LOG_DEBUG, "Failed to decode work in get_upstream_work");
     }
     else
-        applog(LOG_INFO, "Failed json_rpc_call in get_upstream_work");
+        applog(LOG_DEBUG, "Failed json_rpc_call in get_upstream_work");
 
     cgtime(&work->tv_getwork_reply);
     timersub(&(work->tv_getwork_reply), &(work->tv_getwork), &tv_elapsed);
@@ -4067,7 +4067,7 @@ static inline struct pool *select_pool(void)
     }
 out:
 
-    applog(LOG_INFO, "Selecting pool %d for work", pool->pool_no);
+    applog(LOG_DEBUG, "Selecting pool %d for work", pool->pool_no);
     return pool;
 }
 
@@ -4588,7 +4588,7 @@ void roll_work(struct work *work)
     local_work++;
     work->rolls++;
     work->nonce = 0;
-    applog(LOG_INFO, "Successfully rolled work");
+    applog(LOG_DEBUG, "Successfully rolled work");
 
     /* Change the ntime field if this is stratum work */
     if (work->ntime)
@@ -4669,7 +4669,7 @@ retry:
     mutex_unlock(&pool->pool_lock);
 
     if (recruited)
-        applog(LOG_INFO, "Recruited curl for pool %d", pool->pool_no);
+        applog(LOG_DEBUG, "Recruited curl for pool %d", pool->pool_no);
     return ce;
 }
 
@@ -4726,7 +4726,7 @@ static void *submit_work_thread(void *userdata)
 
     RenameThread("SubmitWork");
 
-    applog(LOG_INFO, "Creating extra submit work thread");
+    applog(LOG_DEBUG, "Creating extra submit work thread");
 
     ce = pop_curl_entry(pool);
     /* submit solution to bitcoin via JSON-RPC */
@@ -4787,7 +4787,7 @@ out_unlock:
 
     if (cloned)
     {
-        applog(LOG_INFO, "Pushing cloned available work to stage thread");
+        applog(LOG_DEBUG, "Pushing cloned available work to stage thread");
         stage_work(work_clone);
     }
     return cloned;
@@ -4809,7 +4809,7 @@ static struct work *clone_work(struct work *work)
     work_clone = make_clone(work);
     while (mrs-- > 0 && can_roll(work) && should_roll(work))
     {
-        applog(LOG_INFO, "Pushing rolled converted work to stage thread");
+        applog(LOG_DEBUG, "Pushing rolled converted work to stage thread");
         stage_work(work_clone);
         roll_work(work);
         work_clone = make_clone(work);
@@ -4967,7 +4967,7 @@ static bool stale_work(struct work *work, bool share)
 
     if (work->work_block != work_block)
     {
-        applog(LOG_INFO, "Work stale due to block mismatch");
+        applog(LOG_DEBUG, "Work stale due to block mismatch");
         return true;
     }
 
@@ -4991,7 +4991,7 @@ static bool stale_work(struct work *work, bool share)
 
         if (!pool->stratum_active || !pool->stratum_notify)
         {
-            applog(LOG_INFO, "Work stale due to stratum inactive");
+            applog(LOG_DEBUG, "Work stale due to stratum inactive");
             return true;
         }
 
@@ -5008,7 +5008,7 @@ static bool stale_work(struct work *work, bool share)
 
         if (!same_job)
         {
-            applog(LOG_INFO, "Work stale due to stratum job_id mismatch");
+            applog(LOG_DEBUG, "Work stale due to stratum job_id mismatch");
             return true;
         }
     }
@@ -5027,14 +5027,14 @@ static bool stale_work(struct work *work, bool share)
 
     if ((now.tv_sec - work->tv_staged.tv_sec) >= work_expiry)
     {
-        applog(LOG_INFO, "Work stale due to expiry");
+        applog(LOG_DEBUG, "Work stale due to expiry");
         return true;
     }
 
     if (opt_fail_only && !share && pool != current_pool() && !work->mandatory &&
         pool_strategy != POOL_LOADBALANCE && pool_strategy != POOL_BALANCE)
     {
-        applog(LOG_INFO, "Work stale due to fail only pool mismatch");
+        applog(LOG_DEBUG, "Work stale due to fail only pool mismatch");
         return true;
     }
 
@@ -5265,11 +5265,11 @@ void _discard_work(struct work **workptr, const char *file, const char *func, co
             work->pool->works--;
         }
         total_discarded++;
-        applog(LOG_INFO, "Discarded work");
+        applog(LOG_DEBUG, "Discarded work");
     }
     else
     {
-        applog(LOG_INFO, "Discarded cloned or rolled work");
+        applog(LOG_DEBUG, "Discarded cloned or rolled work");
     }
     _free_work(workptr, file, func, line);
 }
@@ -5303,7 +5303,7 @@ static void discard_stale(void)
 
     if (stale)
     {
-        applog(LOG_INFO, "Discarded %d stales that didn't match current hash", stale);
+        applog(LOG_DEBUG, "Discarded %d stales that didn't match current hash", stale);
     }
 }
 
@@ -5513,7 +5513,7 @@ static bool block_exists(const char *hexstr, const unsigned char *bedata, const 
 
         if (deleted_block)
         {
-            applog(LOG_INFO, "Deleted block %d from database", deleted_block);
+            applog(LOG_DEBUG, "Deleted block %d from database", deleted_block);
         }
     }
 
@@ -5526,7 +5526,7 @@ static bool block_exists(const char *hexstr, const unsigned char *bedata, const 
 
     if (deleted_block)
     {
-        applog(LOG_INFO, "Deleted block %d from database", deleted_block);
+        applog(LOG_DEBUG, "Deleted block %d from database", deleted_block);
     }
 
     return ret;
@@ -5616,7 +5616,7 @@ static bool test_work_current(struct work *work)
             if (memcmp(bedata, current_block, 32))
             {
                 /* Doesn't match current block. It's stale */
-                applog(LOG_INFO, "Stale data from pool %d at height %d", pool->pool_no, height);
+                applog(LOG_DEBUG, "Stale data from pool %d at height %d", pool->pool_no, height);
                 ret = false;
             }
             else
@@ -5634,7 +5634,7 @@ static bool test_work_current(struct work *work)
          * we work on it anyway. */
         if (memcmp(bedata, current_block, 32))
         {
-            applog(LOG_INFO, "Pool %d still on old block", pool->pool_no);
+            applog(LOG_DEBUG, "Pool %d still on old block", pool->pool_no);
         }
 #endif
         if (work->longpoll)
@@ -5706,7 +5706,7 @@ static bool hash_push(struct work *work)
 
 static void _stage_work(struct work *work)
 {
-    applog(LOG_INFO, "Pushing work from pool %d to hash queue", work->pool->pool_no);
+    applog(LOG_DEBUG, "Pushing work from pool %d to hash queue", work->pool->pool_no);
     work->work_block = work_block;
     test_work_current(work);
     work->pool->works++;
@@ -6107,7 +6107,7 @@ static void set_highprio(void)
     int ret = nice(-10);
 
     if (!ret)
-        applog(LOG_INFO, "Unable to set thread to high priority");
+        applog(LOG_DEBUG, "Unable to set thread to high priority");
 
 }
 
@@ -6962,7 +6962,7 @@ static void hashmeter(int thr_id, uint64_t hashes_done)
 
         thr_mhs = (double) (hashes_done / device_tdiff / 1000000);
 
-        applog(LOG_INFO, "[thread %d: %"PRIu64" hashes, %.1f mhash/sec]", thr_id, hashes_done, thr_mhs);
+        applog(LOG_DEBUG, "[thread %d: %"PRIu64" hashes, %.1f mhash/sec]", thr_id, hashes_done, thr_mhs);
         hashes_done /= 1000000;
 
         mutex_lock(&hash_lock);
@@ -7029,7 +7029,7 @@ static void hashmeter(int thr_id, uint64_t hashes_done)
             if(g_local_mhashes_dones[i] >= 0)
             {
                 local_mhashes_done_avg += g_local_mhashes_dones[i];
-                //applog(LOG_INFO, "g_local_mhashes_dones[%d] = %f,%d", i, g_local_mhashes_dones[i],g_local_mhashes_index);
+                //applog(LOG_DEBUG, "g_local_mhashes_dones[%d] = %f,%d", i, g_local_mhashes_dones[i],g_local_mhashes_index);
                 local_mhashes_done_count++;
             }
         }
@@ -7441,7 +7441,7 @@ static void *stratum_rthread(void *userdata)
          * as dead */
         if (!sock_full(pool) && (sel_ret = select(pool->sock + 1, &rd, NULL, NULL, &timeout)) < 1)
         {
-            applog(LOG_INFO, "Stratum select failed on pool %d with value %d", pool->pool_no, sel_ret);
+            applog(LOG_DEBUG, "Stratum select failed on pool %d with value %d", pool->pool_no, sel_ret);
             s = NULL;
         }
         else
@@ -7623,7 +7623,7 @@ static void *stratum_sthread(void *userdata)
 
                 if (pool_tclear(pool, &pool->submit_fail))
                     applog(LOG_WARNING, "Pool %d communication resumed, submitting work", pool->pool_no);
-                applog(LOG_INFO, "Successfully submitted, adding to stratum_shares db");
+                applog(LOG_DEBUG, "Successfully submitted, adding to stratum_shares db");
                 submitted = true;
                 break;
             }
@@ -7637,7 +7637,7 @@ static void *stratum_sthread(void *userdata)
 
             if (opt_lowmem)
             {
-                applog(LOG_INFO, "Lowmem option prevents resubmitting stratum share");
+                applog(LOG_DEBUG, "Lowmem option prevents resubmitting stratum share");
                 break;
             }
 
@@ -7647,7 +7647,7 @@ static void *stratum_sthread(void *userdata)
 
             if (!sessionid_match)
             {
-                applog(LOG_INFO, "No matching session id for resubmitting stratum share");
+                applog(LOG_DEBUG, "No matching session id for resubmitting stratum share");
                 break;
             }
 
@@ -7657,7 +7657,7 @@ static void *stratum_sthread(void *userdata)
 
         if (unlikely(!submitted))
         {
-            applog(LOG_INFO, "Failed to submit stratum share, discarding");
+            applog(LOG_DEBUG, "Failed to submit stratum share, discarding");
             free_work(work);
             free(sshare);
             pool->stale_shares++;
@@ -7759,7 +7759,7 @@ static bool setup_gbt_solo(CURL *curl, struct pool *pool)
     {
         char *cb = bin2hex(pool->coinbase, pool->coinbase_len);
 
-        applog(LOG_INFO, "Pool %d coinbase %s", pool->pool_no, cb);
+        applog(LOG_DEBUG, "Pool %d coinbase %s", pool->pool_no, cb);
         free(cb);
     }
     pool->gbt_curl = curl_easy_init();
@@ -7800,7 +7800,7 @@ static bool pool_active(struct pool *pool, bool pinging)
 
     if (pool->has_gbt)
     {
-        applog(LOG_INFO, "Retrieving block template from pool %s", pool->rpc_url);
+        applog(LOG_DEBUG, "Retrieving block template from pool %s", pool->rpc_url);
     }
     else
     {
@@ -7846,7 +7846,7 @@ retry_stratum:
     /* Probe for GBT support on first pass */
     if (!pool->probed)
     {
-        applog(LOG_INFO, "Probing for GBT support");
+        applog(LOG_DEBUG, "Probing for GBT support");
 
         val = json_rpc_call(curl, pool->rpc_url, pool->rpc_userpass, gbt_req, true, false, &rolltime, pool, false);
 
@@ -7902,15 +7902,15 @@ retry_stratum:
 
         if (pool->has_gbt)
         {
-            applog(LOG_INFO, "GBT coinbase + append support found, switching to GBT protocol");
+            applog(LOG_DEBUG, "GBT coinbase + append support found, switching to GBT protocol");
         }
         else if (pool->gbt_solo)
         {
-            applog(LOG_INFO, "GBT coinbase without append found, switching to GBT solo protocol");
+            applog(LOG_DEBUG, "GBT coinbase without append found, switching to GBT solo protocol");
         }
         else
         {
-            applog(LOG_INFO, "No GBT coinbase + append support found, pool unusable if it has no stratum");
+            applog(LOG_DEBUG, "No GBT coinbase + append support found, pool unusable if it has no stratum");
         }
     }
 
@@ -7950,7 +7950,7 @@ retry_stratum:
 
         if (rc)
         {
-            applog(LOG_INFO, "Successfully retrieved and deciphered work from pool %u %s",
+            applog(LOG_DEBUG, "Successfully retrieved and deciphered work from pool %u %s",
                    pool->pool_no, pool->rpc_url);
 
             if (pool->gbt_solo)
@@ -7969,7 +7969,7 @@ retry_stratum:
             copy_time(&work->tv_getwork_reply, &tv_getwork_reply);
             work->getwork_mode = GETWORK_MODE_TESTPOOL;
             calc_diff(work, 0);
-            applog(LOG_INFO, "Pushing pooltest work to base pool");
+            applog(LOG_DEBUG, "Pushing pooltest work to base pool");
 
             stage_work(work);
             total_getworks++;
@@ -7978,7 +7978,7 @@ retry_stratum:
         }
         else
         {
-            applog(LOG_INFO, "Successfully retrieved but FAILED to decipher work from pool %u %s", pool->pool_no, pool->rpc_url);
+            applog(LOG_DEBUG, "Successfully retrieved but FAILED to decipher work from pool %u %s", pool->pool_no, pool->rpc_url);
             free_work(work);
         }
 
@@ -8025,7 +8025,7 @@ retry_stratum:
     }
     else
     {
-        applog(LOG_INFO, "FAILED to retrieve work from pool %u %s", pool->pool_no, pool->rpc_url);
+        applog(LOG_DEBUG, "FAILED to retrieve work from pool %u %s", pool->pool_no, pool->rpc_url);
 
         if (!pinging && !pool->idle)
         {
@@ -8195,7 +8195,7 @@ void set_target(unsigned char *dest_target, double diff)
     {
         char *htarget = bin2hex(target, (size_t)32);
 
-        applog(LOG_INFO, "Generated target %s", htarget);
+        applog(LOG_DEBUG, "Generated target %s", htarget);
         free(htarget);
     }
 
@@ -8303,9 +8303,9 @@ static void gen_stratum_work(struct pool *pool, struct work *work)
         header = bin2hex(work->data, (size_t)112);
         merkle_hash = bin2hex((const unsigned char *)merkle_root, (size_t)32);
 
-        applog(LOG_INFO, "Generated stratum merkle %s", merkle_hash);
-        applog(LOG_INFO, "Generated stratum header %s", header);
-        applog(LOG_INFO, "Work job_id %s nonce2 %"PRIu64" ntime %s", work->job_id, work->nonce2, work->ntime);
+        applog(LOG_DEBUG, "Generated stratum merkle %s", merkle_hash);
+        applog(LOG_DEBUG, "Generated stratum header %s", header);
+        applog(LOG_DEBUG, "Work job_id %s nonce2 %"PRIu64" ntime %s", work->job_id, work->nonce2, work->ntime);
 
         free(header);
         free(merkle_hash);
@@ -8320,7 +8320,7 @@ static void gen_stratum_work(struct pool *pool, struct work *work)
     if((time(NULL) - local_work_lasttime) > 5)
     {
         int diff = local_work - local_work_last;
-        //applog(LOG_INFO, "local_work 5s gen work count:%d", diff/(time(NULL) - local_work_lasttime));
+        //applog(LOG_DEBUG, "local_work 5s gen work count:%d", diff/(time(NULL) - local_work_lasttime));
         local_work_lasttime = time(NULL);
         local_work_last = local_work;
     }
@@ -8394,7 +8394,7 @@ retry:
     }
     else
     {
-        applog(LOG_INFO, "Pool %d json_rpc_call failed on get gbt, retrying in 5s",
+        applog(LOG_DEBUG, "Pool %d json_rpc_call failed on get gbt, retrying in 5s",
                pool->pool_no);
         if (++pool->seq_getfails > 5)
         {
@@ -8466,9 +8466,9 @@ static void gen_solo_work(struct pool *pool, struct work *work)
 
         header = bin2hex(work->data, 112);
         merkle_hash = bin2hex((const unsigned char *)merkle_root, 32);
-        applog(LOG_INFO, "Generated GBT solo merkle %s", merkle_hash);
-        applog(LOG_INFO, "Generated GBT solo header %s", header);
-        applog(LOG_INFO, "Work nonce2 %"PRIu64" ntime %s", work->nonce2,
+        applog(LOG_DEBUG, "Generated GBT solo merkle %s", merkle_hash);
+        applog(LOG_DEBUG, "Generated GBT solo header %s", header);
+        applog(LOG_DEBUG, "Work nonce2 %"PRIu64" ntime %s", work->nonce2,
                work->ntime);
         free(header);
         free(merkle_hash);
@@ -8530,7 +8530,7 @@ struct work *get_work(struct thr_info *thr, const int thr_id)
     time_t diff_t;
 
     thread_reportout(thr);
-    applog(LOG_INFO, "Popping work from get queue to get work");
+    applog(LOG_DEBUG, "Popping work from get queue to get work");
     diff_t = time(NULL);
 
     while (!work)
@@ -8549,11 +8549,11 @@ struct work *get_work(struct thr_info *thr, const int thr_id)
      * device failures. */
     if (diff_t > 0)
     {
-        applog(LOG_INFO, "Get work blocked for %d seconds", (time_t)diff_t);
+        applog(LOG_DEBUG, "Get work blocked for %d seconds", (time_t)diff_t);
         cgpu->last_device_valid_work += diff_t;
     }
 
-    applog(LOG_INFO, "Got work from get queue to get work for thread %d", thr_id);
+    applog(LOG_DEBUG, "Got work from get queue to get work for thread %d", thr_id);
 
     work->thr_id = thr_id;
 
@@ -8627,16 +8627,16 @@ static void submit_work_async(struct work *work)
 
     if (work->stratum)
     {
-        applog(LOG_INFO, "Pushing pool %d work to stratum queue", pool->pool_no);
+        applog(LOG_DEBUG, "Pushing pool %d work to stratum queue", pool->pool_no);
         if (unlikely(!pool->stratum_q || !tq_push(pool->stratum_q, work)))
         {
-            applog(LOG_INFO, "Discarding work from removed pool");
+            applog(LOG_DEBUG, "Discarding work from removed pool");
             free_work(work);
         }
     }
     else
     {
-        applog(LOG_INFO, "Pushing submit work to work thread");
+        applog(LOG_DEBUG, "Pushing submit work to work thread");
         if (unlikely(pthread_create(&submit_thread, NULL, submit_work_thread, (void *)work)))
             quit(1, "Failed to create submit_work_thread");
     }
@@ -9029,7 +9029,7 @@ static void mt_disable(struct thr_info *mythr, const int thr_id, struct device_d
 {
     applog(LOG_WARNING, "Thread %d being disabled", thr_id);
     mythr->cgpu->rolling = 0;
-    applog(LOG_INFO, "Waiting on sem in miner thread");
+    applog(LOG_DEBUG, "Waiting on sem in miner thread");
     cgsem_wait(&mythr->sem);
     applog(LOG_WARNING, "Thread %d being re-enabled", thr_id);
     drv->thread_enable(mythr);
@@ -9523,7 +9523,7 @@ void flush_queue(struct cgpu_info *cgpu)
     if (work)
     {
         free_work(work);
-        applog(LOG_INFO, "Discarded queued work item");
+        applog(LOG_DEBUG, "Discarded queued work item");
     }
 }
 
@@ -9669,7 +9669,7 @@ void *miner_thread(void *userdata)
         goto out;
     }
 
-    applog(LOG_INFO, "Waiting on sem in miner thread");
+    applog(LOG_DEBUG, "Waiting on sem in miner thread");
     cgsem_wait(&mythr->sem);
 
     cgpu->last_device_valid_work = time(NULL);
@@ -9739,10 +9739,10 @@ static void convert_to_work(json_t *val, int rolltime, struct pool *pool, struct
 
     work = clone_work(work);
 
-    applog(LOG_INFO, "Pushing converted work to stage thread");
+    applog(LOG_DEBUG, "Pushing converted work to stage thread");
 
     stage_work(work);
-    applog(LOG_INFO, "Converted longpoll data to work");
+    applog(LOG_DEBUG, "Converted longpoll data to work");
 }
 
 /* If we want longpoll, enable it for the chosen default pool, or, if
@@ -10049,7 +10049,7 @@ static void reap_curl(struct pool *pool)
 
     if (reaped)
     {
-        applog(LOG_INFO, "Reaped %d curl%s from pool %d", reaped, reaped > 1 ? "s" : "", pool->pool_no);
+        applog(LOG_DEBUG, "Reaped %d curl%s from pool %d", reaped, reaped > 1 ? "s" : "", pool->pool_no);
     }
 }
 
@@ -10210,7 +10210,7 @@ static void *watchdog_thread(void __maybe_unused *userdata)
         cgtime(&notify_tv);
         addtime(&notify_interval, &notify_tv);
 
-        applog(LOG_INFO, "Watchdog notify interval: %.3gs",
+        applog(LOG_DEBUG, "Watchdog notify interval: %.3gs",
                notify_usec / 1000000.0);
     }
 #endif
@@ -10277,7 +10277,7 @@ static void *watchdog_thread(void __maybe_unused *userdata)
             sd_notify(false, "WATCHDOG=1");
             copy_time(&notify_tv, &now);
             addtime(&notify_interval, &notify_tv);
-            applog(LOG_INFO, "Notified watchdog");
+            applog(LOG_DEBUG, "Notified watchdog");
         }
 #endif
 
@@ -10327,7 +10327,7 @@ static void *watchdog_thread(void __maybe_unused *userdata)
                 }
 
                 thr->pause = false;
-                applog(LOG_INFO, "Pushing sem post to thread %d", thr->id);
+                applog(LOG_DEBUG, "Pushing sem post to thread %d", thr->id);
                 cgsem_post(&thr->sem);
             }
         }
@@ -11246,7 +11246,7 @@ static void hotplug_process(void)
              * their queue in case we wish to enable them later */
             if (cgpu->deven != DEV_DISABLED)
             {
-                applog(LOG_INFO, "Pushing sem post to thread %d", thr->id);
+                applog(LOG_DEBUG, "Pushing sem post to thread %d", thr->id);
                 cgsem_post(&thr->sem);
             }
 
@@ -11930,7 +11930,7 @@ int main(int argc, char *argv[])
              * their queue in case we wish to enable them later */
             if (cgpu->deven != DEV_DISABLED)
             {
-                applog(LOG_INFO, "Pushing sem post to thread %d", thr->id);
+                applog(LOG_DEBUG, "Pushing sem post to thread %d", thr->id);
                 cgsem_post(&thr->sem);
             }
         }
@@ -12163,7 +12163,7 @@ begin_bench:
         if (pool->has_stratum)
         {
             gen_stratum_work(pool, work);
-            applog(LOG_INFO, "Generated stratum work");
+            applog(LOG_DEBUG, "Generated stratum work");
             stage_work(work);
             continue;
         }
@@ -12171,14 +12171,14 @@ begin_bench:
         if (opt_benchfile)
         {
             get_benchfile_work(work);
-            applog(LOG_INFO, "Generated benchfile work");
+            applog(LOG_DEBUG, "Generated benchfile work");
             stage_work(work);
             continue;
         }
         else if (opt_benchmark)
         {
             get_benchmark_work(work);
-            applog(LOG_INFO, "Generated benchmark work");
+            applog(LOG_DEBUG, "Generated benchmark work");
             stage_work(work);
             continue;
         }
@@ -12187,7 +12187,7 @@ begin_bench:
         if (pool->gbt_solo)
         {
             gen_solo_work(pool, work);
-            applog(LOG_INFO, "Generated GBT SOLO work");
+            applog(LOG_DEBUG, "Generated GBT SOLO work");
             stage_work(work);
             continue;
         }
@@ -12195,7 +12195,7 @@ begin_bench:
         if (pool->has_gbt)
         {
             gen_gbt_work(pool, work);
-            applog(LOG_INFO, "Generated GBT work");
+            applog(LOG_DEBUG, "Generated GBT work");
             stage_work(work);
             continue;
         }
@@ -12203,14 +12203,14 @@ begin_bench:
         if (opt_benchfile)
         {
             get_benchfile_work(work);
-            applog(LOG_INFO, "Generated benchfile work");
+            applog(LOG_DEBUG, "Generated benchfile work");
             stage_work(work);
             continue;
         }
         else if (opt_benchmark)
         {
             get_benchmark_work(work);
-            applog(LOG_INFO, "Generated benchmark work");
+            applog(LOG_DEBUG, "Generated benchmark work");
             stage_work(work);
             continue;
         }
