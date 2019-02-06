@@ -7605,6 +7605,7 @@ static void *stratum_sthread(void *userdata)
                      sshare->id);
         }
         applog(LOG_INFO, "Submitting share %08lx to pool %d", (long unsigned int)htole32(hash32[6]), pool->pool_no);
+        applog(LOG_INFO, "With nonce %u, nonce2 %lu", last_nonce, last_nonce2);
 
         /* Try resubmitting for up to 2 minutes if we fail to submit
          * once and the stratum pool nonce1 still matches suggesting
@@ -8241,6 +8242,8 @@ void get_work_by_nonce2(struct thr_info *thr,
  * other means to detect when the pool has died in stratum_thread */
 static void gen_stratum_work(struct pool *pool, struct work *work)
 {
+    applog(LOG_INFO, "Gen Stratum Work");
+
     unsigned char merkle_root[32], merkle_sha[64];
     uint32_t *data32, *swap32;
     uint64_t nonce2le;
@@ -8253,7 +8256,10 @@ static void gen_stratum_work(struct pool *pool, struct work *work)
     nonce2le = htole64(pool->nonce2);
     cg_memcpy(pool->coinbase + pool->nonce2_offset, &nonce2le, (unsigned int)pool->n2size);
 
-    work->nonce2     = pool->nonce2++;
+    pool->nonce2     = pool->nonce2 + 10;
+    work->nonce2     = pool->nonce2
+
+    // work->nonce2     = pool->nonce2++;
     work->nonce2_len = pool->n2size;
 
     /* Downgrade to a read lock to read off the pool variables */
