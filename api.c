@@ -2552,7 +2552,7 @@ static void pgaenable(struct io_data *io_data, __maybe_unused SOCKETTYPE c, char
 
     cgpu = get_devices(dev);
 
-    applog(LOG_DEBUG, "API: request to pgaenable pgaid %d device %d %s%u",
+    applog(LOG_INFO, "API: request to pgaenable pgaid %d device %d %s%u",
            id, dev, cgpu->drv->name, cgpu->device_id);
 
     if (cgpu->deven != DEV_DISABLED)
@@ -2584,7 +2584,7 @@ static void pgaenable(struct io_data *io_data, __maybe_unused SOCKETTYPE c, char
         if (pga == dev)
         {
             cgpu->deven = DEV_ENABLED;
-            applog(LOG_DEBUG, "API: Pushing sem post to thread %d", thr->id);
+            applog(LOG_INFO, "API: Pushing sem post to thread %d", thr->id);
             cgsem_post(&thr->sem);
         }
     }
@@ -2626,7 +2626,7 @@ static void pgadisable(struct io_data *io_data, __maybe_unused SOCKETTYPE c, cha
 
     cgpu = get_devices(dev);
 
-    applog(LOG_DEBUG, "API: request to pgadisable pgaid %d device %d %s%u",
+    applog(LOG_INFO, "API: request to pgadisable pgaid %d device %d %s%u",
            id, dev, cgpu->drv->name, cgpu->device_id);
 
     if (cgpu->deven == DEV_DISABLED)
@@ -4179,7 +4179,7 @@ static void ascenable(struct io_data *io_data, __maybe_unused SOCKETTYPE c, char
 
     cgpu = get_devices(dev);
 
-    applog(LOG_DEBUG, "API: request to ascenable ascid %d device %d %s%u",
+    applog(LOG_INFO, "API: request to ascenable ascid %d device %d %s%u",
            id, dev, cgpu->drv->name, cgpu->device_id);
 
     if (cgpu->deven != DEV_DISABLED)
@@ -4211,7 +4211,7 @@ static void ascenable(struct io_data *io_data, __maybe_unused SOCKETTYPE c, char
         if (asc == dev)
         {
             cgpu->deven = DEV_ENABLED;
-            applog(LOG_DEBUG, "API: Pushing sem post to thread %d", thr->id);
+            applog(LOG_INFO, "API: Pushing sem post to thread %d", thr->id);
             cgsem_post(&thr->sem);
         }
     }
@@ -4253,7 +4253,7 @@ static void ascdisable(struct io_data *io_data, __maybe_unused SOCKETTYPE c, cha
 
     cgpu = get_devices(dev);
 
-    applog(LOG_DEBUG, "API: request to ascdisable ascid %d device %d %s%u",
+    applog(LOG_INFO, "API: request to ascdisable ascid %d device %d %s%u",
            id, dev, cgpu->drv->name, cgpu->device_id);
 
     if (cgpu->deven == DEV_DISABLED)
@@ -4650,7 +4650,7 @@ static void send_result(struct io_data *io_data, SOCKETTYPE c, bool isjson)
     len = strlen(buf);
     tosend = len+1;
 
-    applog(LOG_DEBUG, "API: send reply: (%d) '%.10s%s'", tosend, buf, len > 10 ? "..." : BLANK);
+    applog(LOG_INFO, "API: send reply: (%d) '%.10s%s'", tosend, buf, len > 10 ? "..." : BLANK);
 
     count = sendc = 0;
     while (count < 5 && tosend > 0)
@@ -4685,16 +4685,16 @@ static void send_result(struct io_data *io_data, SOCKETTYPE c, bool isjson)
             if (sendc <= 1)
             {
                 if (n == tosend)
-                    applog(LOG_DEBUG, "API: sent all of %d first go", tosend);
+                    applog(LOG_INFO, "API: sent all of %d first go", tosend);
                 else
-                    applog(LOG_DEBUG, "API: sent %d of %d first go", n, tosend);
+                    applog(LOG_INFO, "API: sent %d of %d first go", n, tosend);
             }
             else
             {
                 if (n == tosend)
-                    applog(LOG_DEBUG, "API: sent all of remaining %d (sendc=%d)", tosend, sendc);
+                    applog(LOG_INFO, "API: sent all of remaining %d (sendc=%d)", tosend, sendc);
                 else
-                    applog(LOG_DEBUG, "API: sent %d of remaining %d (sendc=%d)", n, tosend, sendc);
+                    applog(LOG_INFO, "API: sent %d of remaining %d (sendc=%d)", n, tosend, sendc);
             }
 
             tosend -= n;
@@ -5029,7 +5029,7 @@ static void *quit_thread(__maybe_unused void *userdata)
     mutex_unlock(&quit_restart_lock);
 
     if (opt_debug)
-        applog(LOG_DEBUG, "API: killing bmminer");
+        applog(LOG_INFO, "API: killing bmminer");
 
     kill_work();
 
@@ -5043,7 +5043,7 @@ static void *restart_thread(__maybe_unused void *userdata)
     mutex_unlock(&quit_restart_lock);
 
     if (opt_debug)
-        applog(LOG_DEBUG, "API: restarting bmminer");
+        applog(LOG_INFO, "API: restarting bmminer");
 
     app_restart();
 
@@ -5231,13 +5231,13 @@ static void mcast()
         if (SOCKETFAIL(rep = recvfrom(mcast_sock, buf, sizeof(buf) - 1,
                                       0, (struct sockaddr *)(&came_from), &came_from_siz)))
         {
-            applog(LOG_DEBUG, "API mcast failed count=%d (%s) (%d)",
+            applog(LOG_INFO, "API mcast failed count=%d (%s) (%d)",
                    count, SOCKERRMSG, (int)mcast_sock);
             continue;
         }
 
         addrok = check_connect(&came_from, &connectaddr, &group);
-        applog(LOG_DEBUG, "API mcast from %s - %s",
+        applog(LOG_INFO, "API mcast from %s - %s",
                connectaddr, addrok ? "Accepted" : "Ignored");
         if (!addrok)
             continue;
@@ -5249,7 +5249,7 @@ static void mcast()
         getnameinfo((struct sockaddr *)(&came_from), came_from_siz,
                     NULL, 0, came_from_port, sizeof(came_from_port), NI_NUMERICHOST);
 
-        applog(LOG_DEBUG, "API mcast request rep=%d (%s) from [%s]:%s",
+        applog(LOG_INFO, "API mcast request rep=%d (%s) from [%s]:%s",
                (int)rep, buf, connectaddr, came_from_port);
 
         if ((size_t)rep > expect_code_len && memcmp(buf, expect_code, expect_code_len) == 0)
@@ -5257,12 +5257,12 @@ static void mcast()
             reply_port = atoi(&buf[expect_code_len]);
             if (reply_port < 1 || reply_port > 65535)
             {
-                applog(LOG_DEBUG, "API mcast request ignored - invalid port (%s)",
+                applog(LOG_INFO, "API mcast request ignored - invalid port (%s)",
                        &buf[expect_code_len]);
             }
             else
             {
-                applog(LOG_DEBUG, "API mcast request OK port %s=%d",
+                applog(LOG_INFO, "API mcast request OK port %s=%d",
                        &buf[expect_code_len], reply_port);
 
                 if (getaddrinfo(connectaddr, &buf[expect_code_len], &hints, &res) != 0)
@@ -5294,12 +5294,12 @@ static void mcast()
                 freeaddrinfo(res);
                 if (SOCKETFAIL(rep))
                 {
-                    applog(LOG_DEBUG, "API mcast send reply failed (%s) (%d)",
+                    applog(LOG_INFO, "API mcast send reply failed (%s) (%d)",
                            SOCKERRMSG, (int)reply_sock);
                 }
                 else
                 {
-                    applog(LOG_DEBUG, "API mcast send reply (%s) succeeded (%d) (%d)",
+                    applog(LOG_INFO, "API mcast send reply (%s) succeeded (%d) (%d)",
                            replybuf, (int)rep, (int)reply_sock);
                 }
 
@@ -5307,7 +5307,7 @@ static void mcast()
             }
         }
         else
-            applog(LOG_DEBUG, "API mcast request was no good");
+            applog(LOG_INFO, "API mcast request was no good");
     }
 
 die:
@@ -5386,7 +5386,7 @@ void api(int api_thr_id)
 
     if (!opt_api_listen)
     {
-        applog(LOG_DEBUG, "API not running%s", UNAVAILABLE);
+        applog(LOG_INFO, "API not running%s", UNAVAILABLE);
         free(apisock);
         return;
     }
@@ -5449,7 +5449,7 @@ void api(int api_thr_id)
     int optval = 1;
     // If it doesn't work, we don't really care - just show a debug message
     if (SOCKETFAIL(setsockopt(*apisock, SOL_SOCKET, SO_REUSEADDR, (void *)(&optval), sizeof(optval))))
-        applog(LOG_DEBUG, "API setsockopt SO_REUSEADDR failed (ignored): %s", SOCKERRMSG);
+        applog(LOG_INFO, "API setsockopt SO_REUSEADDR failed (ignored): %s", SOCKERRMSG);
 #else
     // On windows a 2nd program can bind to a port>1024 already in use unless
     // SO_EXCLUSIVEADDRUSE is used - however then the bind to a closed port
@@ -5517,7 +5517,7 @@ void api(int api_thr_id)
         }
 
         addrok = check_connect((struct sockaddr_storage *)&cli, &connectaddr, &group);
-        applog(LOG_DEBUG, "API: connection from %s - %s",
+        applog(LOG_INFO, "API: connection from %s - %s",
                connectaddr, addrok ? "Accepted" : "Ignored");
 
         if (addrok)
@@ -5531,9 +5531,9 @@ void api(int api_thr_id)
             if (opt_debug)
             {
                 if (SOCKETFAIL(n))
-                    applog(LOG_DEBUG, "API: recv failed: %s", SOCKERRMSG);
+                    applog(LOG_INFO, "API: recv failed: %s", SOCKERRMSG);
                 else
-                    applog(LOG_DEBUG, "API: recv command: (%d) '%s'", n, buf);
+                    applog(LOG_INFO, "API: recv command: (%d) '%s'", n, buf);
             }
 
             if (!SOCKETFAIL(n))
@@ -5664,7 +5664,7 @@ void api(int api_thr_id)
                                 else
                                 {
                                     message(io_data, MSG_ACCDENY, 0, cmds[i].name, isjson);
-                                    applog(LOG_DEBUG, "API: access denied to '%s' for '%s' command", connectaddr, cmds[i].name);
+                                    applog(LOG_INFO, "API: access denied to '%s' for '%s' command", connectaddr, cmds[i].name);
                                 }
 
                                 did = true;
@@ -5712,7 +5712,7 @@ die:
     free(apisock);
 
     if (opt_debug)
-        applog(LOG_DEBUG, "API: terminating due to: %s",
+        applog(LOG_INFO, "API: terminating due to: %s",
                do_a_quit ? "QUIT" : (do_a_restart ? "RESTART" : (bye ? "BYE" : "UNKNOWN!")));
 
     mutex_lock(&quit_restart_lock);
